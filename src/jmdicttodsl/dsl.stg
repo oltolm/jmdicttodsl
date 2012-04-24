@@ -1,0 +1,174 @@
+abbreviations ::= [
+    "martial arts term": "MA",
+    "rude or X-rated term (not displayed in educational software)": "X",
+    "abbreviation": "abbr",
+    "adjective (keiyoushi)": "adj-i",
+    "adjectival nouns or quasi-adjectives (keiyodoshi)": "adj-na",
+    "nouns which may take the genitive case particle `no'": "adj-no",
+    "pre-noun adjectival (rentaishi)": "adj-pn",
+    "`taru' adjective": "adj-t",
+    "noun or verb acting prenominally": "adj-f",
+    "former adjective classification (being removed)": "adj",
+    "adverb (fukushi)": "adv",
+    "adverb taking the `to' particle": "adv-to",
+    "archaism": "arch",
+    "ateji (phonetic) reading": "ateji",
+    "auxiliary": "aux",
+    "auxiliary verb": "aux-v",
+    "auxiliary adjective": "aux-adj",
+    "Buddhist term": "Buddh",
+    "chemistry term": "chem",
+    "children's language": "chn",
+    "colloquialism": "col",
+    "computer terminology": "comp",
+    "conjunction": "conj",
+    "counter": "ctr",
+    "derogatory": "derog",
+    "exclusively kanji": "eK",
+    "exclusively kana": "ek",
+    "Expressions (phrases, clauses, etc.)": "exp",
+    "familiar language": "fam",
+    "female term or language": "fem",
+    "food term": "food",
+    "geometry term": "geom",
+    "gikun (meaning as reading)  or jukujikun (special kanji reading)": "gikun",
+    "honorific or respectful (sonkeigo) language": "hon",
+    "humble (kenjougo) language": "hum",
+    "word containing irregular kanji usage": "iK",
+    "idiomatic expression": "id",
+    "word containing irregular kana usage": "ik",
+    "interjection (kandoushi)": "int",
+    "irregular okurigana usage": "io",
+    "irregular verb": "iv",
+    "linguistics terminology": "ling",
+    "manga slang": "m-sl",
+    "male term or language": "male",
+    "male slang": "male-sl",
+    "mathematics": "math",
+    "military": "mil",
+    "noun (common) (futsuumeishi)": "n",
+    "adverbial noun (fukushitekimeishi)": "n-adv",
+    "noun, used as a suffix": "n-suf",
+    "noun, used as a prefix": "n-pref",
+    "noun (temporal) (jisoumeishi)": "n-t",
+    "numeric": "num",
+    "word containing out-dated kanji": "oK",
+    "obsolete term": "obs",
+    "obscure term": "obsc",
+    "out-dated or obsolete kana usage": "ok",
+    "onomatopoeic or mimetic word": "on-mim",
+    "pronoun": "pn",
+    "poetical term": "poet",
+    "polite (teineigo) language": "pol",
+    "prefix": "pref",
+    "proverb": "proverb",
+    "particle": "prt",
+    "physics terminology": "physics",
+    "rare": "rare",
+    "sensitive": "sens",
+    "slang": "sl",
+    "suffix": "suf",
+    "word usually written using kanji alone": "uK",
+    "word usually written using kana alone": "uk",
+    "Ichidan verb": "v1",
+    "Nidan verb with 'u' ending (archaic)": "v2a-s",
+    "Yondan verb with `hu/fu' ending (archaic)": "v4h",
+    "Yondan verb with `ru' ending (archaic)": "v4r",
+    "Godan verb (not completely classified)": "v5",
+    "Godan verb - -aru special class": "v5aru",
+    "Godan verb with `bu' ending": "v5b",
+    "Godan verb with `gu' ending": "v5g",
+    "Godan verb with `ku' ending": "v5k",
+    "Godan verb - Iku/Yuku special class": "v5k-s",
+    "Godan verb with `mu' ending": "v5m",
+    "Godan verb with `nu' ending": "v5n",
+    "Godan verb with `ru' ending": "v5r",
+    "Godan verb with `ru' ending (irregular verb)": "v5r-i",
+    "Godan verb with `su' ending": "v5s",
+    "Godan verb with `tsu' ending": "v5t",
+    "Godan verb with `u' ending": "v5u",
+    "Godan verb with `u' ending (special class)": "v5u-s",
+    "Godan verb - Uru old class verb (old form of Eru)": "v5uru",
+    "Godan verb with `zu' ending": "v5z",
+    "Ichidan verb - zuru verb (alternative form of -jiru verbs)": "vz",
+    "intransitive verb": "vi",
+    "Kuru verb - special class": "vk",
+    "irregular nu verb": "vn",
+    "irregular ru verb, plain form ends with -ri": "vr",
+    "noun or participle which takes the aux. verb suru": "vs",
+    "su verb - precursor to the modern suru": "vs-c",
+    "suru verb - special class": "vs-s",
+    "suru verb - irregular": "vs-i",
+    "Kyoto-ben": "kyb",
+    "Osaka-ben": "osb",
+    "Kansai-ben": "ksb",
+    "Kantou-ben": "ktb",
+    "Tosa-ben": "tsb",
+    "Touhoku-ben": "thb",
+    "Tsugaru-ben": "tsug",
+    "Kyuushuu-ben": "kyu",
+    "Ryuukyuu-ben": "rkb",
+    "Nagano-ben": "nab",
+    "transitive verb": "vt",
+    "vulgar expression or word": "vulg",
+    default: key
+]
+
+entries(entry) ::= <%
+    [c maroon]<entry.kana>[/c]
+    <if(entry.kanji)>[c navy]<\u3010><entry.kanji><\u3011>[/c]<endif>
+    <if(entry.info)><infos(entry.info)><endif>
+%>
+
+info(x) ::= "[i]([p]<abbreviations.(x)>[/p])[/i]"
+
+infos(xs) ::= <%
+    [i](
+    <xs: {x | [p]<abbreviations.(x)>[/p]}; separator=",">
+    )[/i]
+%>
+
+pos(sense) ::= <%
+    <if(sense.pos)><infos(sense.pos)><endif>
+%>
+
+field(sense) ::= <%
+    <if(sense.field)><infos(sense.field)><endif>
+%>
+
+misc(sense) ::= <%
+    <if(sense.misc)><infos(sense.misc)><endif>
+%>
+
+dial(sense) ::= <%
+    <if(sense.dial)><infos(sense.dial)><endif>
+%>
+
+lsource(sense) ::= <%
+    <sense.lsource: { x |
+        <if(x.text)>
+            [i]([p]<x.lang>[/p]: <x.text>)[/i]
+        <else>
+            [i]([p]<x.lang>[/p])[/i]
+        <endif>
+    }; separator=" ">
+%>
+
+gloss(sense) ::= <%
+    <if(sense.gloss)><sense.gloss: {x | <x>}; separator="; ">.<endif>
+%>
+
+xref(sense) ::= <%
+    <if(sense.xref)>(See <sense.xref: {x | [ref]<x>[/ref]}; separator=", ">)<endif>
+%>
+
+join(list) ::= <%
+    <list; separator=" ">
+%>
+
+senses(index, entries, senses, count) ::= <%
+    <index: {x | <x>}; separator="\n">
+    <\n><\t>
+    [m1]<entries: entries(); separator="、">[/m]
+    <\n><\t>[trn]<senses: {s | [m2]<if(count)><i>) <endif><s>[/m]}; separator="\n\t">[/trn]
+%>
