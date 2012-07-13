@@ -19,6 +19,11 @@ import javax.xml.parsers.SAXParserFactory;
 public class JMdictToDsl extends javax.swing.JFrame {
 
     private Date start;
+    private boolean isBusy = false;
+
+    boolean isBusy () {
+        return isBusy;
+    }
 
     class Task extends SwingWorker<Void, Void> {
 
@@ -35,7 +40,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
         }
 
         @Override
-        protected Void doInBackground() {
+        protected Void doInBackground() throws Exception {
             Writer writer = null;
 
             textArea.append(String.format("Starting conversion to %1$s using %2$s.\n",
@@ -60,17 +65,17 @@ public class JMdictToDsl extends javax.swing.JFrame {
                     SAXParserFactory factory = SAXParserFactory.newInstance();
                     SAXParser saxParser = factory.newSAXParser();
                     saxParser.parse(file, handler);
-                } else
-                    new StaxReader(file, writer, lang, template, format).doit();
+                } else {
+                    StaxReader staxReader = new StaxReader(file, writer, lang, template, format);
+                    staxReader.doit();
+                }
             } catch (Exception ex) {
-                textArea.append(ex.toString() + "\n");
                 Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 if (writer != null)
                     try {
                         writer.close();
                     } catch (IOException ex) {
-                        textArea.append(ex.toString() + "\n");
                         Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
                     }
             }
@@ -79,6 +84,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
 
         @Override
         protected void done() {
+            isBusy = false;
             progressBar.setIndeterminate(false);
             Date end = new Date();
             textArea.append(String.format("Done in %1$sms.\n", end.getTime() - start.getTime()));
@@ -225,6 +231,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
     }
 
     void doit(List<File> files) {
+        isBusy = true;
         progressBar.setIndeterminate(true);
         String template = (String) templateComboBox.getSelectedItem();
         String lang = (String) langComboBox.getSelectedItem();

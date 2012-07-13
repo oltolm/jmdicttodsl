@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de> -->
 <xsl:stylesheet
-version="1.0"
-xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-xmlns:exsl="http://exslt.org/common"
-xmlns:my="my"
-exclude-result-prefixes="my">
+    version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:exsl="http://exslt.org/common"
+    xmlns:my="my"
+    exclude-result-prefixes="my">
 
     <xsl:output method="text"/>
 
@@ -131,33 +131,47 @@ exclude-result-prefixes="my">
                 <xsl:number format="1) " value="position()"/>
             </xsl:if>
             <xsl:variable name="attributes">
-                <attr><xsl:call-template name="format-info">
-                    <xsl:with-param name="info" select="pos"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-info">
+                        <xsl:with-param name="info" select="pos"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-info">
-                    <xsl:with-param name="info" select="field"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-info">
+                        <xsl:with-param name="info" select="field"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-info">
-                    <xsl:with-param name="info" select="misc"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-info">
+                        <xsl:with-param name="info" select="misc"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-info">
-                    <xsl:with-param name="info" select="dial"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-info">
+                        <xsl:with-param name="info" select="dial"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-lsource">
-                    <xsl:with-param name="lsource" select="lsource"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-lsource">
+                        <xsl:with-param name="lsource" select="lsource"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-gloss">
-                    <xsl:with-param name="gloss" select="gloss"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-gloss">
+                        <xsl:with-param name="gloss" select="gloss"/>
+                    </xsl:call-template>
+                </attr>
 
-                <attr><xsl:call-template name="format-xref">
-                    <xsl:with-param name="xref" select="xref"/>
-                </xsl:call-template></attr>
+                <attr>
+                    <xsl:call-template name="format-xref">
+                        <xsl:with-param name="xref" select="xref"/>
+                    </xsl:call-template>
+                </attr>
             </xsl:variable>
 
             <xsl:for-each select="exsl:node-set($attributes)/attr[text()]">
@@ -248,8 +262,8 @@ exclude-result-prefixes="my">
         <my:part key="word usually written using kana alone" value="uk"/>
         <my:part key="Ichidan verb" value="v1"/>
         <my:part key="Nidan verb with 'u' ending (archaic)" value="v2a-s"/>
-        <my:part key="Yondan verb with `hu/fu' ending (archaic)" value="v4h"/>
-        <my:part key="Yondan verb with `ru' ending (archaic)" value="v4r"/>
+        <my:part key="Yodan verb with `hu/fu' ending (archaic)" value="v4h"/>
+        <my:part key="Yodan verb with `ru' ending (archaic)" value="v4r"/>
         <my:part key="Godan verb (not completely classified)" value="v5"/>
         <my:part key="Godan verb - -aru special class" value="v5aru"/>
         <my:part key="Godan verb with `bu' ending" value="v5b"/>
@@ -287,5 +301,59 @@ exclude-result-prefixes="my">
         <my:part key="Nagano-ben" value="nab"/>
         <my:part key="transitive verb" value="vt"/>
         <my:part key="vulgar expression or word" value="vulg"/>
+        <my:part key="`kari' adjective (archaic)" value="adj-kari"/>
+        <my:part key="`ku' adjective (archaic)" value="adj-ku"/>
+        <my:part key="`shiku' adjective (archaic)" value="adj-shiku"/>
+        <my:part key="archaic/formal form of na-adjective" value="adj-nari"/>
+        <my:part key="proper noun" value="n-pr"/>
+        <my:part key="verb unspecified" value="v-unspec"/>
+        <my:part key="Yodan verb with `ku' ending (archaic)" value="v4k"/>
+        <my:part key="Yodan verb with `gu' ending (archaic)" value="v4g"/>
+        <my:part key="Yodan verb with `su' ending (archaic)" value="v4s"/>
+        <my:part key="Yodan verb with `tsu' ending (archaic)" value="v4t"/>
+        <my:part key="Yodan verb with `nu' ending (archaic)" value="v4n"/>
+        <my:part key="Yodan verb with `bu' ending (archaic)" value="v4b"/>
+        <my:part key="Yodan verb with `mu' ending (archaic)" value="v4m"/>
+        <my:part key="Nidan verb (upper class) with `ku' ending (archaic)" value="v2k-k"/>
+        <my:part key="Nidan verb (upper class) with `gu' ending (archaic)" value="v2g-k"/>
+        <my:part key="Nidan verb (upper class) with `tsu' ending (archaic)" value="v2t-k"/>
+        <my:part key="Nidan verb (upper class) with `dzu' ending (archaic)" value="v2d-k"/>
+        <my:part key="Nidan verb (upper class) with `hu/fu' ending (archaic)" value="v2h-k"/>
+        <my:part key="Nidan verb (upper class) with `bu' ending (archaic)" value="v2b-k"/>
+        <my:part key="Nidan verb (upper class) with `mu' ending (archaic)" value="v2m-k"/>
+        <my:part key="Nidan verb (upper class) with `yu' ending (archaic)" value="v2y-k"/>
+        <my:part key="Nidan verb (upper class) with `ru' ending (archaic)" value="v2r-k"/>
+        <my:part key="Nidan verb (lower class) with `ku' ending (archaic)" value="v2k-s"/>
+        <my:part key="Nidan verb (lower class) with `gu' ending (archaic)" value="v2g-s"/>
+        <my:part key="Nidan verb (lower class) with `su' ending (archaic)" value="v2s-s"/>
+        <my:part key="Nidan verb (lower class) with `zu' ending (archaic)" value="v2z-s"/>
+        <my:part key="Nidan verb (lower class) with `tsu' ending (archaic)" value="v2t-s"/>
+        <my:part key="Nidan verb (lower class) with `dzu' ending (archaic)" value="v2d-s"/>
+        <my:part key="Nidan verb (lower class) with `nu' ending (archaic)" value="v2n-s"/>
+        <my:part key="Nidan verb (lower class) with `hu/fu' ending (archaic)" value="v2h-s"/>
+        <my:part key="Nidan verb (lower class) with `bu' ending (archaic)" value="v2b-s"/>
+        <my:part key="Nidan verb (lower class) with `mu' ending (archaic)" value="v2m-s"/>
+        <my:part key="Nidan verb (lower class) with `yu' ending (archaic)" value="v2y-s"/>
+        <my:part key="Nidan verb (lower class) with `ru' ending (archaic)" value="v2r-s"/>
+        <my:part key="Nidan verb (lower class) with `u' ending and `we' conjugation (archaic)" value="v2w-s"/>
+        <my:part key="architecture term" value="archit"/>
+        <my:part key="anatomical term" value="anat"/>
+        <my:part key="astronomy, etc. term" value="astron"/>
+        <my:part key="baseball term" value="baseb"/>
+        <my:part key="biology term" value="biol"/>
+        <my:part key="botany term" value="bot"/>
+        <my:part key="business term" value="bus"/>
+        <my:part key="economics term" value="econ"/>
+        <my:part key="engineering term" value="engr"/>
+        <my:part key="finance term" value="finc"/>
+        <my:part key="geology, etc. term" value="geol"/>
+        <my:part key="law, etc. term" value="law"/>
+        <my:part key="medicine, etc. term" value="med"/>
+        <my:part key="music term" value="music"/>
+        <my:part key="Shinto term" value="Shinto"/>
+        <my:part key="sports term" value="sports"/>
+        <my:part key="sumo term" value="sumo"/>
+        <my:part key="zoology term" value="zool"/>
+        <my:part key="jocular, humorous term" value="joc"/>
     </my:parts>
 </xsl:stylesheet>

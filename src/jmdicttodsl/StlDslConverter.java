@@ -48,7 +48,7 @@ class StlDslConverter implements Converter {
                 // STL evaluates an attribute to false only if it is "null" or
                 // "false".
                 for (LSource lsource : sense.lsource)
-                    if (lsource.text.isEmpty())
+                    if (lsource.text != null && lsource.text.isEmpty())
                         lsource.text = null;
 
                 List<String> attributes = new ArrayList<String>();

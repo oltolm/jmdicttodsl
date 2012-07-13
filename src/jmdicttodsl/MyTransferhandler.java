@@ -26,7 +26,7 @@ class MyTransferhandler extends TransferHandler {
 
     @Override
     public boolean canImport(TransferSupport support) {
-        return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
+        return !frame.isBusy() && support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
     }
 
     @Override
