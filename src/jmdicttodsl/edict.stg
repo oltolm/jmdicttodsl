@@ -179,7 +179,7 @@ dial(xs) ::= "<xs: {x | (<x>:) }>"
 sense(xs, count) ::= <%
     <xs: {x |
         <infos(x.pos)>
-        <if(count)>(<i>)<endif>
+        <if(count)>(<i>) <endif>
         <infos(x.field)>
         <infos(x.misc)>
         <lsource(x.lsource)>

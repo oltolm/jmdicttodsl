@@ -67,7 +67,7 @@ class XsltEdictConverter implements Converter {
     @Override
     public void writeHeader() {
         try {
-            writer.append("？？？？ /EDICT, EDICT__SUB(P), EDICT2 Japanese-English Electronic Dictionary Files/Copyright Electronic Dictionary Research &amp; Development Group - 2008/Created: " + new Date().toString() + "&#xA;");
+            writer.append("　？？？ /EDICT, EDICT_SUB(P), EDICT2 Japanese-English Electronic Dictionary Files/Copyright Electronic Dictionary Research & Development Group - 2011/Created: " + new Date().toString() + "\n");
         } catch (IOException ex) {
             Logger.getLogger(XsltEdictConverter.class.getName()).log(Level.SEVERE, null, ex);
         }

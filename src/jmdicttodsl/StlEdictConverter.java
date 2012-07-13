@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -55,6 +58,11 @@ class StlEdictConverter implements Converter {
 
     @Override
     public void writeHeader() {
+        try {
+            writer.append("　？？？ /EDICT, EDICT_SUB(P), EDICT2 Japanese-English Electronic Dictionary Files/Copyright Electronic Dictionary Research & Development Group - 2011/Created: " + new Date().toString() + "\n");
+        } catch (IOException ex) {
+            Logger.getLogger(XsltEdictConverter.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void processEntry(XmlEntry xmlEntry, Kanji k_ele, Reading r_ele) throws IOException {
@@ -88,7 +96,7 @@ class StlEdictConverter implements Converter {
                 st.add("xs", senses);
                 st.add("count", senses.size() > 1);
                 result.append(st.render());
-                
+
                 result.append("\n");
                 writer.append(result.toString());
             }
