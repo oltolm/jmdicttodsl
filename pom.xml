@@ -4,7 +4,7 @@
   <groupId>jmdicttodsl</groupId>
   <artifactId>Jmdict2Dsl</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
+  <version>0.2</version>
   <name>Jmdict2Dsl</name>
   <url>http://maven.apache.org</url>
     <build>
