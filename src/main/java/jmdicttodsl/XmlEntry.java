@@ -16,9 +16,9 @@ import java.util.List;
 class XmlEntry {
 
     @XStreamImplicit
-    public List<Kanji> k_ele = new ArrayList<Kanji>();
+    public List<Kanji> k_ele = new ArrayList<>();
     @XStreamImplicit
-    public List<Reading> r_ele = new ArrayList<Reading>();
+    public List<Reading> r_ele = new ArrayList<>();
     @XStreamImplicit
-    public List<Sense> sense = new ArrayList<Sense>();
+    public List<Sense> sense = new ArrayList<>();
 }

@@ -17,9 +17,9 @@ import java.util.List;
 class Reading {
     public String reb;
     @XStreamImplicit(itemFieldName="re_inf")
-    public List<String> re_inf = new ArrayList<String>();
+    public List<String> re_inf = new ArrayList<>();
     @XStreamImplicit(itemFieldName="re_restr")
-    public List<String> re_restr = new ArrayList<String>();
+    public List<String> re_restr = new ArrayList<>();
     @XStreamOmitField
-    public List<Sense> sense = new ArrayList<Sense>();
+    public List<Sense> sense = new ArrayList<>();
 }

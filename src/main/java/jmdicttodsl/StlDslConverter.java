@@ -43,7 +43,7 @@ class StlDslConverter implements Converter {
                 "dial", "lsource", "gloss", "xref");
 
         for (DslEntry dslEntry : dslEntries) {
-            List<String> senses = new ArrayList<String>();
+            List<String> senses = new ArrayList<>();
             for (Sense sense : dslEntry.sense) {
                 // STL evaluates an attribute to false only if it is "null" or
                 // "false".
@@ -51,7 +51,7 @@ class StlDslConverter implements Converter {
                     if (lsource.text != null && lsource.text.isEmpty())
                         lsource.text = null;
 
-                List<String> attributes = new ArrayList<String>();
+                List<String> attributes = new ArrayList<>();
                 for (String name : names) {
                     ST st = group.getInstanceOf(name);
                     st.add("sense", sense);
@@ -85,14 +85,20 @@ class StlDslConverter implements Converter {
     @Override
     public void writeHeader() throws IOException {
         String lng;
-        if (lang.equals("German"))
-            lng = "De";
-        else if (lang.equals("French"))
-            lng = "Fr";
-        else if (lang.equals("Russian"))
-            lng = "Ru";
-        else
-            lng = "En";
+        switch (lang) {
+            case "German":
+                lng = "De";
+                break;
+            case "French":
+                lng = "Fr";
+                break;
+            case "Russian":
+                lng = "Ru";
+                break;
+            default:
+                lng = "En";
+                break;
+        }
         writer.append("#NAME	\"JMdict (Ja-" + lng + ")\"\r\n");
         writer.append("#INDEX_LANGUAGE	\"Japanese\"\r\n");
         writer.append("#CONTENTS_LANGUAGE	\"" + lang + "\"\r\n\r\n");

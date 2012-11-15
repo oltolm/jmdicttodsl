@@ -38,12 +38,17 @@ class StaxReader {
         this.writer = writer;
         this.file = file;
         this.lang = "eng";
-        if (lang.equals("German"))
-            this.lang = "ger";
-        else if (lang.equals("French"))
-            this.lang = "fre";
-        else if (lang.equals("Russian"))
-            this.lang = "rus";
+        switch (lang) {
+            case "German":
+                this.lang = "ger";
+                break;
+            case "French":
+                this.lang = "fre";
+                break;
+            case "Russian":
+                this.lang = "rus";
+                break;
+        }
     }
 
     void doit() throws Exception {

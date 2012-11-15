@@ -72,14 +72,20 @@ class XsltDslConverter implements Converter {
     @Override
     public void writeHeader() throws IOException {
         String lng;
-        if (lang.equals("German"))
-            lng = "De";
-        else if (lang.equals("French"))
-            lng = "Fr";
-        else if (lang.equals("Russian"))
-            lng = "Ru";
-        else
-            lng = "En";
+        switch (lang) {
+            case "German":
+                lng = "De";
+                break;
+            case "French":
+                lng = "Fr";
+                break;
+            case "Russian":
+                lng = "Ru";
+                break;
+            default:
+                lng = "En";
+                break;
+        }
         writer.append("#NAME	\"JMdict (Ja-" + lng + ")\"\r\n");
         writer.append("#INDEX_LANGUAGE	\"Japanese\"\r\n");
         writer.append("#CONTENTS_LANGUAGE	\"" + lang + "\"\r\n\r\n");

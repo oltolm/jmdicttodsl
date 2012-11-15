@@ -68,7 +68,7 @@ class StlEdictConverter implements Converter {
     private void processEntry(XmlEntry xmlEntry, Kanji k_ele, Reading r_ele) throws IOException {
         StringBuilder result = new StringBuilder();
         if (r_ele.re_restr.contains(k_ele.keb) || r_ele.re_restr.isEmpty()) {
-            List<Sense> senses = new ArrayList<Sense>();
+            List<Sense> senses = new ArrayList<>();
             for (Sense s : xmlEntry.sense)
                 if ((s.stagr.isEmpty() && s.stagk.isEmpty())
                         || s.stagr.contains(r_ele.reb)

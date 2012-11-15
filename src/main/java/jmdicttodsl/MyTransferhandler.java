@@ -37,9 +37,7 @@ class MyTransferhandler extends TransferHandler {
             List<File> files = (List<File>) transferData;
             frame.doit(files);
             return true;
-        } catch (UnsupportedFlavorException ex) {
-            Logger.getLogger(MyTransferhandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (UnsupportedFlavorException | IOException ex) {
             Logger.getLogger(MyTransferhandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;

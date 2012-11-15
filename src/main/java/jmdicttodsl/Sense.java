@@ -15,23 +15,23 @@ import java.util.List;
 @XStreamAlias("sense")
 class Sense {
     @XStreamImplicit(itemFieldName="pos")
-    public List<String> pos = new ArrayList<String>();
+    public List<String> pos = new ArrayList<>();
     @XStreamImplicit(itemFieldName="field")
-    public List<String> field = new ArrayList<String>();
+    public List<String> field = new ArrayList<>();
     @XStreamImplicit(itemFieldName="misc")
-    public List<String> misc = new ArrayList<String>();
+    public List<String> misc = new ArrayList<>();
     @XStreamImplicit(itemFieldName="dial")
-    public List<String> dial = new ArrayList<String>();
+    public List<String> dial = new ArrayList<>();
     @XStreamImplicit
-    public List<LSource> lsource = new ArrayList<LSource>();
+    public List<LSource> lsource = new ArrayList<>();
     @XStreamImplicit(itemFieldName="gloss")
-    public List<String> gloss = new ArrayList<String>();
+    public List<String> gloss = new ArrayList<>();
     @XStreamImplicit(itemFieldName="xref")
-    public List<String> xref = new ArrayList<String>();
+    public List<String> xref = new ArrayList<>();
     @XStreamImplicit(itemFieldName="stagk")
-    public List<String> stagk = new ArrayList<String>();
+    public List<String> stagk = new ArrayList<>();
     @XStreamImplicit(itemFieldName="stagr")
-    public List<String> stagr = new ArrayList<String>();
+    public List<String> stagr = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

@@ -11,10 +11,10 @@ import java.util.*;
  */
 class DslProcessor {
      List<DslEntry> process(XmlEntry entry) {
-        List<Entry> entries = new ArrayList<Entry>();
-        Map<String, Kanji> ktable = new HashMap<String, Kanji>();
-        Map<String, Reading> rtable = new HashMap<String, Reading>();
-        List<Sense> senses = new ArrayList<Sense>();
+        List<Entry> entries = new ArrayList<>();
+        Map<String, Kanji> ktable = new HashMap<>();
+        Map<String, Reading> rtable = new HashMap<>();
+        List<Sense> senses = new ArrayList<>();
 
         for (Kanji k_ele : entry.k_ele)
             ktable.put(k_ele.keb, k_ele);
@@ -56,7 +56,7 @@ class DslProcessor {
     private List<DslEntry> filterEntries(List<DslEntry> entries) {
         Set<String> index;
         for (DslEntry dslEntry : entries) {
-            index = new HashSet<String>();
+            index = new HashSet<>();
             for (Entry entry : dslEntry.entry) {
                 index.add(entry.kana);
                 index.add(entry.kanji);
@@ -80,7 +80,7 @@ class DslProcessor {
     }
 
     private List<DslEntry> mergeEntries(List<Entry> entries) {
-        List<DslEntry> retval = new ArrayList<DslEntry>();
+        List<DslEntry> retval = new ArrayList<>();
         for (int i = 0; i < entries.size(); ++i) {
             Entry entry = entries.get(i);
             if (entry == null)
@@ -105,5 +105,5 @@ class DslProcessor {
         }
         return retval;
     }
-    
+
 }

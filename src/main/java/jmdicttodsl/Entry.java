@@ -18,9 +18,9 @@ class Entry {
     public String kana;
     public String kanji;
     @XStreamImplicit(itemFieldName="info")
-    public List<String> info = new ArrayList<String>();
+    public List<String> info = new ArrayList<>();
     @XStreamImplicit
-    public List<Sense> senses = new ArrayList<Sense>();
+    public List<Sense> senses = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

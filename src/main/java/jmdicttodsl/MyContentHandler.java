@@ -29,7 +29,7 @@ class MyContentHandler extends DefaultHandler {
     private LSource lsource;
     private Sense sense;
     private String format;
-    
+
     @Override
     public void error(SAXParseException e) throws SAXException {
         throw e;
@@ -61,12 +61,17 @@ class MyContentHandler extends DefaultHandler {
         this.glossLang = "";
         this.file = file;
         this.lang = "eng";
-        if (lang.equals("German"))
-            this.lang = "ger";
-        else if (lang.equals("French"))
-            this.lang = "fre";
-        else if (lang.equals("Russian"))
-            this.lang = "rus";
+        switch (lang) {
+            case "German":
+                this.lang = "ger";
+                break;
+            case "French":
+                this.lang = "fre";
+                break;
+            case "Russian":
+                this.lang = "rus";
+                break;
+        }
     }
 
     @Override
@@ -96,19 +101,26 @@ class MyContentHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         builder = new StringBuilder();
-        if (qName.equals("entry"))
-            entry = new XmlEntry();
-        else if (qName.equals("k_ele"))
-            kanji = new Kanji();
-        else if (qName.equals("r_ele"))
-            reading = new Reading();
-        else if (qName.equals("sense"))
-            sense = new Sense();
-        else if (qName.equals("gloss"))
-            glossLang = attributes.getValue("xml:lang");
-        else if (qName.equals("lsource")) {
-            lsource = new LSource();
-            lsource.lang = attributes.getValue("xml:lang");
+        switch (qName) {
+            case "entry":
+                entry = new XmlEntry();
+                break;
+            case "k_ele":
+                kanji = new Kanji();
+                break;
+            case "r_ele":
+                reading = new Reading();
+                break;
+            case "sense":
+                sense = new Sense();
+                break;
+            case "gloss":
+                glossLang = attributes.getValue("xml:lang");
+                break;
+            case "lsource":
+                lsource = new LSource();
+                lsource.lang = attributes.getValue("xml:lang");
+                break;
         }
     }
 
