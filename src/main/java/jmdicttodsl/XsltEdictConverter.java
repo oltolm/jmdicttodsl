@@ -47,7 +47,7 @@ class XsltEdictConverter implements Converter {
         if (new File(fileName).exists())
             template = new StreamSource(new File(fileName));
         else
-            template = new StreamSource(getClass().getResource("edict.xsl").toString());
+            template = new StreamSource(getClass().getResource("/edict.xsl").toString());
         transformer = factory.newTransformer(template);
     }
 

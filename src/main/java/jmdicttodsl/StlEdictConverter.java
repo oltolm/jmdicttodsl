@@ -36,7 +36,7 @@ class StlEdictConverter implements Converter {
         if (new File(fileName).exists())
             group = new STGroupFile(fileName);
         else
-            group = new STGroupFile(getClass().getResource("edict.stg"),
+            group = new STGroupFile(getClass().getResource("/edict.stg"),
                     "UTF-8", '<', '>');
     }
 

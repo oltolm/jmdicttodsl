@@ -56,6 +56,7 @@ abbreviations ::= [
     "obsolete term": "obs",
     "obscure term": "obsc",
     "out-dated or obsolete kana usage": "ok",
+    "old or irregular kana form": "oik",
     "onomatopoeic or mimetic word": "on-mim",
     "pronoun": "pn",
     "poetical term": "poet",

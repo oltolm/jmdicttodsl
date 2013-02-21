@@ -6,6 +6,7 @@ package jmdicttodsl;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,11 +30,11 @@ class StlDslConverter implements Converter {
         this.writer = writer;
         this.lang = lang;
         String fileName = file.getParent() + File.separator + "dsl.stg";
+        URL resource = getClass().getResource("/dsl.stg");
         if (new File(fileName).exists())
             group = new STGroupFile(fileName);
         else
-            group = new STGroupFile(getClass().getResource("dsl.stg"),
-                    "UTF-8", '<', '>');
+            group = new STGroupFile(resource, "UTF-8", '<', '>');
     }
 
     @Override

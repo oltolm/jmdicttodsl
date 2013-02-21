@@ -210,6 +210,7 @@ exclude-result-prefixes="my">
         <my:part key="obsolete term" value="obs"/>
         <my:part key="obscure term" value="obsc"/>
         <my:part key="out-dated or obsolete kana usage" value="ok"/>
+        <my:part key="old or irregular kana form" value="oik">
         <my:part key="onomatopoeic or mimetic word" value="on-mim"/>
         <my:part key="pronoun" value="pn"/>
         <my:part key="poetical term" value="poet"/>
