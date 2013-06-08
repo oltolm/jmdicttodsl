@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -31,13 +32,14 @@ public class JMdictToDsl extends javax.swing.JFrame {
 
     class Task extends SwingWorker<Void, Void> {
 
-        private File file;
+        private File inFile;
         private String language;
         private String templateLanguage;
         private String format;
+        private File outFile;
 
         public Task(File file, String lang, String template, String format) {
-            this.file = file;
+            this.inFile = file;
             this.language = lang;
             this.templateLanguage = template;
             this.format = format;
@@ -53,26 +55,32 @@ public class JMdictToDsl extends javax.swing.JFrame {
 
             try {
                 String fileName;
-                if (file.getPath().endsWith(".xml"))
-                    fileName = file.getPath().substring(0, file.getPath().length() - 4)
-                            + "." + format.toLowerCase();
-                else
-                    fileName = file.getPath() + "." + format.toLowerCase();
-                File outFile = new File(fileName);
+                if (inFile.getName().endsWith(".gz")) {
+                    fileName = inFile.getName().substring(0, inFile.getName().length() - 3);
+                } else {
+                    fileName = inFile.getName();
+                }
+                fileName += "." + format.toLowerCase();
+                outFile = new File(inFile.getParentFile(), fileName);
                 if (outFile.exists())
                     outFile.delete();
                 writer = new OutputStreamWriter(new FileOutputStream(outFile), "UTF-16");
 //                writer = new FileWriter(outFile, true);
 
                 String lang = createLang(language);
-                Converter converter = createConverter(file, writer, lang);
+                Converter converter = createConverter(inFile, writer, lang);
                 if (false) {
                     MyContentHandler handler = new MyContentHandler(lang, converter);
                     SAXParserFactory factory = SAXParserFactory.newInstance();
                     SAXParser saxParser = factory.newSAXParser();
-                    saxParser.parse(file, handler);
+                    saxParser.parse(inFile, handler);
                 } else {
-                    InputStream inputStream = new FileInputStream(file);
+                    InputStream inputStream;
+                    if (inFile.getName().endsWith(".gz")) {
+                        inputStream = new GZIPInputStream(new FileInputStream(inFile));
+                    } else {
+                        inputStream = new FileInputStream(inFile);
+                    }
                     converter.writeHeader();
                     StaxReader staxReader = new StaxReader(inputStream, lang, (Procedure<XmlEntry>) converter);
                     staxReader.doit();
@@ -96,7 +104,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
             isBusy = false;
             progressBar.setIndeterminate(false);
             Date end = new Date();
-            textArea.append(String.format("Done in %1$sms.\n", end.getTime() - start.getTime()));
+            textArea.append(String.format("Created %1$s in %2$sms.\n", outFile.getPath(), end.getTime() - start.getTime()));
             JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
             scrollBar.setValue(scrollBar.getMaximum());
         }
@@ -198,7 +206,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JMDict to DSL");
 
-        label.setText("Drop the file \"JMDict\" here.");
+        label.setText("Drop the file \"JMDict\" or \"JMDict.gz\" here.");
 
         langComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "English", "French", "German", "Russian" }));
 

@@ -98,7 +98,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="label">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Drop the file &quot;JMDict&quot; here."/>
+            <Property name="text" type="java.lang.String" value="Drop the file &quot;JMDict&quot; or &quot;JMDict.gz&quot; here."/>
           </Properties>
         </Component>
         <Component class="javax.swing.JProgressBar" name="progressBar">
