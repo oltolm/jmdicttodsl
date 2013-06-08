@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -17,10 +17,9 @@ import org.xml.sax.helpers.DefaultHandler;
 class MyContentHandler extends DefaultHandler {
 
     private StringBuilder builder;
+    /** Value of the xml:lang attribute. */
     private String lang;
     private String glossLang;
-    private File file;
-    private Writer writer;
     private Converter converter;
 
     private XmlEntry entry;
@@ -28,7 +27,6 @@ class MyContentHandler extends DefaultHandler {
     private Reading reading;
     private LSource lsource;
     private Sense sense;
-    private String format;
 
     @Override
     public void error(SAXParseException e) throws SAXException {
@@ -45,39 +43,17 @@ class MyContentHandler extends DefaultHandler {
         throw e;
     }
 
-    public MyContentHandler(File file, Writer writer, String lang, String template, String format) {
-        this.format = format;
-        if (template.equals("XSLT")) {
-            if (format.equals("DSL"))
-                this.converter = new XsltDslConverter();
-            else if ("EDICT".equals(format))
-                this.converter = new XsltEdictConverter();
-        }
-        else if (template.equals("StringTemplate"))
-            this.converter = new StlDslConverter();
-        this.writer = writer;
+    public MyContentHandler(String lang, Converter converter) {
+        this.converter = converter;
         this.entry = null;
         this.builder = null;
         this.glossLang = "";
-        this.file = file;
-        this.lang = "eng";
-        switch (lang) {
-            case "German":
-                this.lang = "ger";
-                break;
-            case "French":
-                this.lang = "fre";
-                break;
-            case "Russian":
-                this.lang = "rus";
-                break;
-        }
+        this.lang = lang;
     }
 
     @Override
     public void startDocument() throws SAXException {
         try {
-            converter.init(file, writer, lang);
             converter.writeHeader();
         } catch (Exception ex) {
             throw new SAXException(ex);
@@ -126,50 +102,65 @@ class MyContentHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equals("entry"))
-            try {
-            converter.doit(entry);
-        } catch (Exception ex) {
-            throw new SAXException(ex);
+        switch (qName) {
+            case "entry":
+                try {
+                    converter.doit(entry);
+                } catch (Exception ex) {
+                    throw new SAXException(ex);
+                }
+                break;
+            case "keb":
+                kanji.keb = builder.toString();
+                break;
+            case "ke_inf":
+                kanji.ke_inf.add(builder.toString());
+                break;
+            case "reb":
+                reading.reb = builder.toString();
+                break;
+            case "re_inf":
+                reading.re_inf.add(builder.toString());
+                break;
+            case "re_restr":
+                reading.re_restr.add(builder.toString());
+                break;
+            case "pos":
+                sense.pos.add(builder.toString());
+                break;
+            case "field":
+                sense.field.add(builder.toString());
+                break;
+            case "misc":
+                sense.misc.add(builder.toString());
+                break;
+            case "xref":
+                sense.xref.add(builder.toString());
+                break;
+            case "gloss":
+                if (glossLang.equals(lang))
+                      sense.gloss.add(builder.toString());
+                break;
+            case "stagk":
+                sense.stagk.add(builder.toString());
+                break;
+            case "stagr":
+                sense.stagr.add(builder.toString());
+                break;
+            case "k_ele":
+                entry.k_ele.add(kanji);
+                break;
+            case "r_ele":
+                entry.r_ele.add(reading);
+                break;
+            case "lsource":
+                lsource.text = builder.toString();
+                sense.lsource.add(lsource);
+                break;
+            case "sense":
+                entry.sense.add(sense);
+                break;
         }
-        else if (qName.equals("keb"))
-            kanji.keb = builder.toString();
-        else if (qName.equals("ke_inf"))
-            kanji.ke_inf.add(builder.toString());
-        else if (qName.equals("reb"))
-            reading.reb = builder.toString();
-        else if (qName.equals("re_inf"))
-            reading.re_inf.add(builder.toString());
-        else if (qName.equals("re_restr"))
-            reading.re_restr.add(builder.toString());
-        else if (qName.equals("pos"))
-            sense.pos.add(builder.toString());
-        else if (qName.equals("field"))
-            sense.field.add(builder.toString());
-        else if (qName.equals("misc"))
-            sense.misc.add(builder.toString());
-        else if (qName.equals("xref"))
-            sense.xref.add(builder.toString());
-        else if (qName.equals("gloss"))
-        {
-            if (glossLang.equals(lang))
-                  sense.gloss.add(builder.toString());
-        }
-        else if (qName.equals("stagk"))
-            sense.stagk.add(builder.toString());
-        else if (qName.equals("stagr"))
-            sense.stagr.add(builder.toString());
-        else if (qName.equals("k_ele"))
-            entry.k_ele.add(kanji);
-        else if (qName.equals("r_ele"))
-            entry.r_ele.add(reading);
-        else if (qName.equals("lsource"))
-        {
-            lsource.text = builder.toString();
-            sense.lsource.add(lsource);
-        }
-        else if (qName.equals("sense"))
-            entry.sense.add(sense);
     }
 
 }

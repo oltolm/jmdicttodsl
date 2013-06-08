@@ -45,4 +45,9 @@ class Entry {
         int hash = 3;
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "Entry{" + "kana=" + kana + ", kanji=" + kanji + ", info=" + info + ", senses=" + senses + '}';
+    }
 }

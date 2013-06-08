@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -21,15 +21,14 @@ import javax.xml.transform.stream.StreamSource;
  *
  * @author Oleg Tolmatcev
  */
-class XsltDslConverter implements Converter {
+class XsltDslConverter implements Converter, Procedure<XmlEntry> {
     private XStream xstream;
     private Transformer transformer;
     private Writer writer;
     private DslProcessor processor = new DslProcessor();
     private String lang;
 
-    @Override
-    public void init(File file, Writer writer, String lang) throws TransformerConfigurationException {
+    public XsltDslConverter(StreamSource template, Writer writer, String lang) throws TransformerConfigurationException {
         this.lang = lang;
         this.writer = writer;
         xstream = new XStream(new DomDriver());
@@ -44,12 +43,6 @@ class XsltDslConverter implements Converter {
         xstream.omitField(Sense.class, "stagr");
 
         TransformerFactory factory = TransformerFactory.newInstance();
-        String fileName = file.getParent() + File.separator + "dsl.xsl";
-        StreamSource template;
-        if (new File(fileName).exists())
-            template = new StreamSource(new File(fileName));
-        else
-            template = new StreamSource(getClass().getResource("/dsl.xsl").toString());
         transformer = factory.newTransformer(template);
     }
 
@@ -65,8 +58,6 @@ class XsltDslConverter implements Converter {
 
     @Override
     public void finish() throws IOException {
-        if (writer != null)
-            writer.close();
     }
 
     @Override
@@ -89,5 +80,10 @@ class XsltDslConverter implements Converter {
         writer.append("#NAME	\"JMdict (Ja-" + lng + ")\"\r\n");
         writer.append("#INDEX_LANGUAGE	\"Japanese\"\r\n");
         writer.append("#CONTENTS_LANGUAGE	\"" + lang + "\"\r\n\r\n");
+    }
+
+    @Override
+    public void apply(XmlEntry arg) throws Exception {
+        doit(arg);
     }
 }

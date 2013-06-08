@@ -17,7 +17,7 @@ import javax.swing.TransferHandler;
  *
  * @author Oleg Tolmatcev
  */
-class MyTransferhandler extends TransferHandler {
+public class MyTransferhandler extends TransferHandler {
     private JMdictToDsl frame;
 
     MyTransferhandler(JMdictToDsl frame) {

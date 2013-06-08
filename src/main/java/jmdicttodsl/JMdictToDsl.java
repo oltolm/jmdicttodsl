@@ -1,9 +1,10 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,6 +12,9 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.stream.StreamSource;
+import org.stringtemplate.v4.STGroupFile;
 
 /**
  *
@@ -28,14 +32,14 @@ public class JMdictToDsl extends javax.swing.JFrame {
     class Task extends SwingWorker<Void, Void> {
 
         private File file;
-        private String lang;
-        private String template;
+        private String language;
+        private String templateLanguage;
         private String format;
 
         public Task(File file, String lang, String template, String format) {
             this.file = file;
-            this.lang = lang;
-            this.template = template;
+            this.language = lang;
+            this.templateLanguage = template;
             this.format = format;
         }
 
@@ -44,7 +48,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
             Writer writer = null;
 
             textArea.append(String.format("Starting conversion to %1$s using %2$s.\n",
-                    lang, template));
+                    language, templateLanguage));
             start = new Date();
 
             try {
@@ -60,14 +64,19 @@ public class JMdictToDsl extends javax.swing.JFrame {
                 writer = new OutputStreamWriter(new FileOutputStream(outFile), "UTF-16");
 //                writer = new FileWriter(outFile, true);
 
+                String lang = createLang(language);
+                Converter converter = createConverter(file, writer, lang);
                 if (false) {
-                    MyContentHandler handler = new MyContentHandler(file, writer, lang, template, format);
+                    MyContentHandler handler = new MyContentHandler(lang, converter);
                     SAXParserFactory factory = SAXParserFactory.newInstance();
                     SAXParser saxParser = factory.newSAXParser();
                     saxParser.parse(file, handler);
                 } else {
-                    StaxReader staxReader = new StaxReader(file, writer, lang, template, format);
+                    InputStream inputStream = new FileInputStream(file);
+                    converter.writeHeader();
+                    StaxReader staxReader = new StaxReader(inputStream, lang, (Procedure<XmlEntry>) converter);
                     staxReader.doit();
+                    converter.finish();
                 }
             } catch (Exception ex) {
                 Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,6 +99,69 @@ public class JMdictToDsl extends javax.swing.JFrame {
             textArea.append(String.format("Done in %1$sms.\n", end.getTime() - start.getTime()));
             JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
             scrollBar.setValue(scrollBar.getMaximum());
+        }
+
+        private Converter createConverter(File file, Writer writer, String lang) throws TransformerConfigurationException {
+            switch (templateLanguage) {
+                case "XSLT":
+                    switch (format) {
+                        case "DSL": {
+                            StreamSource template = getXsltTemplate(file, "dsl.xsl");
+                            return new XsltDslConverter(template, writer, lang);
+                        }
+                        case "EDICT": {
+                            StreamSource template = getXsltTemplate(file, "edict.xsl");
+                            return new XsltEdictConverter(template, writer, lang);
+                        }
+                    }
+                case "StringTemplate":
+                    switch (format) {
+                        case "DSL": {
+                            STGroupFile group = createSTGroup(file, "dsl.stg");
+                            return new StlDslConverter(group, writer, lang);
+                        }
+                        case "EDICT": {
+                            STGroupFile group = createSTGroup(file, "edict.stg");
+                            return new StlEdictConverter(group, writer, lang);
+                        }
+                    }
+                default: return null;
+            }
+        }
+
+        private String createLang(String language) {
+            switch (language) {
+                case "German":
+                    return "ger";
+                case "French":
+                    return "fre";
+                case "Russian":
+                    return "rus";
+                default: {
+                    assert language.equals("English");
+                    return "eng";
+                }
+            }
+        }
+
+        private STGroupFile createSTGroup(File file, String name) {
+            STGroupFile group;
+            String fileName = file.getParent() + File.separator + name;
+            if (new File(fileName).exists()) {
+                group = new STGroupFile(fileName);
+            } else  {
+                URL resource = getClass().getResource("/" + name);
+                group = new STGroupFile(resource, "UTF-8", '<', '>');
+            }
+            return group;
+        }
+
+        private StreamSource getXsltTemplate(File file, String name) {
+            String fileName = file.getParent() + File.separator + name;
+            if (new File(fileName).exists())
+                return new StreamSource(new File(fileName));
+            else
+                return new StreamSource(getClass().getResource("/" + name).toString());
         }
     }
 
@@ -217,13 +289,8 @@ public class JMdictToDsl extends javax.swing.JFrame {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     new JMdictToDsl();
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InstantiationException ex) {
-                    Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (UnsupportedLookAndFeelException ex) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                        UnsupportedLookAndFeelException ex) {
                     Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

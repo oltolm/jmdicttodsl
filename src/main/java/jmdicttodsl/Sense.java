@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -65,5 +65,10 @@ class Sense {
     public int hashCode() {
         int hash = 7;
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "Sense{" + "pos=" + pos + ", field=" + field + ", misc=" + misc + ", dial=" + dial + ", lsource=" + lsource + ", gloss=" + gloss + ", xref=" + xref + ", stagk=" + stagk + ", stagr=" + stagr + '}';
     }
 }

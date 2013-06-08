@@ -1,40 +1,30 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
 
 /**
  *
  * @author Oleg Tolmatcev
  */
-class StlDslConverter implements Converter {
+class StlDslConverter implements Converter, Procedure<XmlEntry> {
 
-    private Writer writer;
+    private Appendable appender;
     private STGroup group;
     private DslProcessor processor = new DslProcessor();
     private String lang;
 
-    @Override
-    public void init(File file, Writer writer, String lang) {
-        this.writer = writer;
+    public StlDslConverter(STGroup group, Appendable appender, String lang) {
+        this.appender = appender;
         this.lang = lang;
-        String fileName = file.getParent() + File.separator + "dsl.stg";
-        URL resource = getClass().getResource("/dsl.stg");
-        if (new File(fileName).exists())
-            group = new STGroupFile(fileName);
-        else
-            group = new STGroupFile(resource, "UTF-8", '<', '>');
+        this.group = group;
     }
 
     @Override
@@ -72,15 +62,13 @@ class StlDslConverter implements Converter {
             st.add("entries", dslEntry.entry);
             st.add("senses", senses);
             st.add("count", senses.size() > 1);
-            writer.append(st.render());
-            writer.append("\r\n\r\n");
+            appender.append(st.render());
+            appender.append("\r\n\r\n");
         }
     }
 
     @Override
     public void finish() throws IOException {
-        if (writer != null)
-            writer.close();
     }
 
     @Override
@@ -100,8 +88,13 @@ class StlDslConverter implements Converter {
                 lng = "En";
                 break;
         }
-        writer.append("#NAME	\"JMdict (Ja-" + lng + ")\"\r\n");
-        writer.append("#INDEX_LANGUAGE	\"Japanese\"\r\n");
-        writer.append("#CONTENTS_LANGUAGE	\"" + lang + "\"\r\n\r\n");
+        appender.append("#NAME	\"JMdict (Ja-" + lng + ")\"\r\n");
+        appender.append("#INDEX_LANGUAGE	\"Japanese\"\r\n");
+        appender.append("#CONTENTS_LANGUAGE	\"" + lang + "\"\r\n\r\n");
+    }
+
+    @Override
+    public void apply(XmlEntry arg) throws Exception {
+        doit(arg);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -10,7 +10,7 @@ import java.util.*;
  * @author Oleg Tolmatcev
  */
 class DslProcessor {
-     List<DslEntry> process(XmlEntry entry) {
+    public List<DslEntry> process(XmlEntry entry) {
         List<Entry> entries = new ArrayList<>();
         Map<String, Kanji> ktable = new HashMap<>();
         Map<String, Reading> rtable = new HashMap<>();
@@ -89,14 +89,14 @@ class DslProcessor {
             DslEntry dslEntry = new DslEntry();
             dslEntry.entry.add(entry);
             dslEntry.sense.addAll(entry.senses);
-            entry.senses = Collections.EMPTY_LIST;
+            entry.senses = Collections.emptyList();
 
             for (int j = i + 1; j < entries.size(); ++j) {
                 Entry entry1 = entries.get(j);
                 if (entry1 == null)
                     continue;
                 if (dslEntry.sense.equals(entry1.senses)) {
-                    entry1.senses = Collections.EMPTY_LIST;
+                    entry1.senses = Collections.emptyList();
                     dslEntry.entry.add(entry1);
                     entries.set(j, null);
                 }

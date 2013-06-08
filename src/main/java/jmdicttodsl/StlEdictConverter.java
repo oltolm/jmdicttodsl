@@ -1,43 +1,27 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
 
 /**
  *
  * @author Oleg Tolmatcev
  */
-class StlEdictConverter implements Converter {
+class StlEdictConverter implements Converter, Procedure<XmlEntry> {
 
-    private Writer writer;
+    private Appendable appender;
     private STGroup group;
-    private String lang;
 
-    public StlEdictConverter() {
-    }
-
-    @Override
-    public void init(File file, Writer writer, String lang) {
-        this.writer = writer;
-        this.lang = lang;
-        String fileName = file.getParent() + File.separator + "edict.stg";
-        if (new File(fileName).exists())
-            group = new STGroupFile(fileName);
-        else
-            group = new STGroupFile(getClass().getResource("/edict.stg"),
-                    "UTF-8", '<', '>');
+    public StlEdictConverter(STGroup group, Appendable writer, String lang) {
+        this.appender = writer;
+        this.group = group;
     }
 
     @Override
@@ -52,17 +36,11 @@ class StlEdictConverter implements Converter {
 
     @Override
     public void finish() throws IOException {
-        if (writer != null)
-                writer.close();
     }
 
     @Override
-    public void writeHeader() {
-        try {
-            writer.append("　？？？ /EDICT, EDICT_SUB(P), EDICT2 Japanese-English Electronic Dictionary Files/Copyright Electronic Dictionary Research & Development Group - 2011/Created: " + new Date().toString() + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(XsltEdictConverter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void writeHeader() throws IOException {
+        appender.append("　？？？ /EDICT, EDICT_SUB(P), EDICT2 Japanese-English Electronic Dictionary Files/Copyright Electronic Dictionary Research & Development Group - 2011/Created: " + new Date().toString() + "\n");
     }
 
     private void processEntry(XmlEntry xmlEntry, Kanji k_ele, Reading r_ele) throws IOException {
@@ -98,8 +76,13 @@ class StlEdictConverter implements Converter {
                 result.append(st.render());
 
                 result.append("\n");
-                writer.append(result.toString());
+                appender.append(result.toString());
             }
         }
+    }
+
+    @Override
+    public void apply(XmlEntry arg) throws Exception {
+        doit(arg);
     }
 }

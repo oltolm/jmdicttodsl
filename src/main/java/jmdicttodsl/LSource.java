@@ -39,4 +39,9 @@ class LSource {
         int hash = 7;
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "LSource{" + "lang=" + lang + ", text=" + text + '}';
+    }
 }
