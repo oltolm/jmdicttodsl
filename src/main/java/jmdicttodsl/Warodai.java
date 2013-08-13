@@ -182,32 +182,19 @@ public class Warodai {
     }
 
     private static String readAll (String fileName) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        BufferedReader br = null;
-        try {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-16"))) {
             StringBuilder retval = new StringBuilder();
-            FileInputStream fis = new FileInputStream(fileName);
-            InputStreamReader isr = new InputStreamReader(fis, "UTF-16");
-            br = new BufferedReader(isr);
             String line;
-            while ((line = br.readLine()) != null)
+            while ((line = br.readLine()) != null) {
                 retval.append(line).append("\n");
+            }
             return retval.toString();
-        } finally {
-            if (br != null)
-                br.close();
         }
     }
 
     private static void writeAll (String fileName, String string) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        BufferedWriter bw = null;
-        try {
-            FileOutputStream fos = new FileOutputStream(fileName);
-            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-16");
-            bw = new BufferedWriter(osw);
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-16"))) {
             bw.append(string);
-        } finally {
-            if (bw != null)
-                bw.close();
         }
     }
 }
