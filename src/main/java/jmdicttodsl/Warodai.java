@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2011-2014 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
+ */
 package jmdicttodsl;
 
 import java.io.*;
