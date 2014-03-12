@@ -16,10 +16,10 @@ import org.stringtemplate.v4.STGroup;
  */
 class StlDslConverter implements Converter, Procedure<XmlEntry> {
 
-    private Appendable appender;
-    private STGroup group;
-    private DslProcessor processor = new DslProcessor();
-    private String lang;
+    private final Appendable appender;
+    private final STGroup group;
+    private final DslProcessor processor = new DslProcessor();
+    private final String lang;
 
     public StlDslConverter(STGroup group, Appendable appender, String lang) {
         this.appender = appender;

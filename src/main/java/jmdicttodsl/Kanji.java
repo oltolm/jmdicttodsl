@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Oleg Tolmatcev
  */
 @XStreamAlias("k_ele")
-class Kanji {
+public class Kanji {
     public String keb;
     @XStreamImplicit(itemFieldName="ke_inf")
     public final List<String> ke_inf = new ArrayList<>();

@@ -22,9 +22,9 @@ import javax.xml.transform.stream.StreamSource;
  */
 class XsltEdictConverter implements Converter, Procedure<XmlEntry> {
 
-    private Writer writer;
-    private XStream xstream;
-    private Transformer transformer;
+    private final Writer writer;
+    private final XStream xstream;
+    private final Transformer transformer;
 
     public XsltEdictConverter(StreamSource template, Writer writer, String lang) throws TransformerConfigurationException {
         this.writer = writer;

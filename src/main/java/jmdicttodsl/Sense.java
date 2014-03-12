@@ -13,7 +13,7 @@ import java.util.List;
  * @author Oleg Tolmatcev
  */
 @XStreamAlias("sense")
-class Sense {
+public class Sense {
     @XStreamImplicit(itemFieldName="pos")
     public final List<String> pos = new ArrayList<>();
     @XStreamImplicit(itemFieldName="field")

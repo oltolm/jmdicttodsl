@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
  */
 @XStreamAlias("lsource")
 @XStreamConverter(value=ToAttributedValueConverter.class, strings={"text"})
-class LSource {
+public class LSource {
 
     @XStreamAsAttribute
     public String lang;

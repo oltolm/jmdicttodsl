@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Oleg Tolmatcev
  */
 @XStreamAlias("r_ele")
-class Reading {
+public class Reading {
     public String reb;
     @XStreamImplicit(itemFieldName="re_inf")
     public final List<String> re_inf = new ArrayList<>();

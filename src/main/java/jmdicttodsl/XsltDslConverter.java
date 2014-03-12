@@ -6,7 +6,6 @@ package jmdicttodsl;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.io.xml.TraxSource;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
@@ -22,11 +21,11 @@ import javax.xml.transform.stream.StreamSource;
  * @author Oleg Tolmatcev
  */
 class XsltDslConverter implements Converter, Procedure<XmlEntry> {
-    private XStream xstream;
-    private Transformer transformer;
-    private Writer writer;
-    private DslProcessor processor = new DslProcessor();
-    private String lang;
+    private final XStream xstream;
+    private final Transformer transformer;
+    private final Writer writer;
+    private final DslProcessor processor = new DslProcessor();
+    private final String lang;
 
     public XsltDslConverter(StreamSource template, Writer writer, String lang) throws TransformerConfigurationException {
         this.lang = lang;

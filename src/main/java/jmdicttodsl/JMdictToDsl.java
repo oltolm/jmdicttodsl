@@ -83,7 +83,8 @@ public class JMdictToDsl extends javax.swing.JFrame {
                         inputStream = new FileInputStream(inFile);
                     }
                     converter.writeHeader();
-                    StaxReader staxReader = new StaxReader(inputStream, lang, (Procedure<XmlEntry>) converter);
+                    InputStreamReader reader = new InputStreamReader(inputStream);
+                    StaxReader staxReader = new StaxReader(reader, lang, (Procedure<XmlEntry>) converter);
                     staxReader.doit();
                     converter.finish();
                 }

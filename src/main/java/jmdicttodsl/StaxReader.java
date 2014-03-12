@@ -3,7 +3,6 @@
  */
 package jmdicttodsl;
 
-import java.io.InputStream;
 import java.io.Reader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -15,17 +14,10 @@ import javax.xml.stream.XMLStreamReader;
  */
 class StaxReader {
 
-    private Procedure<XmlEntry> proc;
-    private Reader reader = null;
+    private final Procedure<XmlEntry> proc;
+    private final Reader reader;
     /** The value of the xml:lang attribute. */
-    private String lang;
-    private InputStream inputStream = null;
-
-    StaxReader(InputStream inputStream, String lang, Procedure<XmlEntry> proc) {
-        this.proc = proc;
-        this.inputStream = inputStream;
-        this.lang = lang;
-    }
+    private final String lang;
 
     StaxReader(Reader reader, String lang, Procedure<XmlEntry> proc) {
         this.proc = proc;
@@ -40,12 +32,7 @@ class StaxReader {
         Sense sense = null;
 
         XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLStreamReader xmlReader;
-        if (inputStream != null) {
-             xmlReader = factory.createXMLStreamReader(inputStream);
-        } else {
-            xmlReader = factory.createXMLStreamReader(reader);
-        }
+        XMLStreamReader xmlReader = factory.createXMLStreamReader(reader);
         while (xmlReader.hasNext()) {
             switch (xmlReader.next()) {
                 case XMLStreamConstants.START_ELEMENT:

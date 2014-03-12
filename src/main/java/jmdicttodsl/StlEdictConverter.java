@@ -16,8 +16,8 @@ import org.stringtemplate.v4.STGroup;
  */
 class StlEdictConverter implements Converter, Procedure<XmlEntry> {
 
-    private Appendable appender;
-    private STGroup group;
+    private final Appendable appender;
+    private final STGroup group;
 
     public StlEdictConverter(STGroup group, Appendable writer, String lang) {
         this.appender = writer;
