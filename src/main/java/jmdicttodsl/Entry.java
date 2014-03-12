@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -18,9 +18,9 @@ class Entry {
     public String kana;
     public String kanji;
     @XStreamImplicit(itemFieldName="info")
-    public List<String> info = new ArrayList<>();
+    public final List<String> info = new ArrayList<>();
     @XStreamImplicit
-    public List<Sense> senses = new ArrayList<>();
+    public final List<Sense> senses = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

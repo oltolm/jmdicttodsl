@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -16,11 +16,11 @@ import java.util.Objects;
 @XStreamAlias("DslEntry")
 class DslEntry {
     @XStreamImplicit(itemFieldName="index")
-    public List<String> index =  new ArrayList<>();
+    public final List<String> index =  new ArrayList<>();
     @XStreamImplicit
-    public List<Entry> entry = new ArrayList<>();
+    public final List<Entry> entry = new ArrayList<>();
     @XStreamImplicit
-    public List<Sense> sense = new ArrayList<>();
+    public final List<Sense> sense = new ArrayList<>();
 
     @Override
     public int hashCode() {

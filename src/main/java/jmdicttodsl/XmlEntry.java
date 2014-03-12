@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -17,11 +17,11 @@ import java.util.Objects;
 public class XmlEntry {
 
     @XStreamImplicit
-    public List<Kanji> k_ele = new ArrayList<>();
+    public final List<Kanji> k_ele = new ArrayList<>();
     @XStreamImplicit
-    public List<Reading> r_ele = new ArrayList<>();
+    public final List<Reading> r_ele = new ArrayList<>();
     @XStreamImplicit
-    public List<Sense> sense = new ArrayList<>();
+    public final List<Sense> sense = new ArrayList<>();
 
     @Override
     public int hashCode() {

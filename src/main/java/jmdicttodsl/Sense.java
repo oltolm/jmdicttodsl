@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -15,23 +15,23 @@ import java.util.List;
 @XStreamAlias("sense")
 class Sense {
     @XStreamImplicit(itemFieldName="pos")
-    public List<String> pos = new ArrayList<>();
+    public final List<String> pos = new ArrayList<>();
     @XStreamImplicit(itemFieldName="field")
-    public List<String> field = new ArrayList<>();
+    public final List<String> field = new ArrayList<>();
     @XStreamImplicit(itemFieldName="misc")
-    public List<String> misc = new ArrayList<>();
+    public final List<String> misc = new ArrayList<>();
     @XStreamImplicit(itemFieldName="dial")
-    public List<String> dial = new ArrayList<>();
+    public final List<String> dial = new ArrayList<>();
     @XStreamImplicit
-    public List<LSource> lsource = new ArrayList<>();
+    public final List<LSource> lsource = new ArrayList<>();
     @XStreamImplicit(itemFieldName="gloss")
-    public List<String> gloss = new ArrayList<>();
+    public final List<String> gloss = new ArrayList<>();
     @XStreamImplicit(itemFieldName="xref")
-    public List<String> xref = new ArrayList<>();
+    public final List<String> xref = new ArrayList<>();
     @XStreamImplicit(itemFieldName="stagk")
-    public List<String> stagk = new ArrayList<>();
+    public final List<String> stagk = new ArrayList<>();
     @XStreamImplicit(itemFieldName="stagr")
-    public List<String> stagr = new ArrayList<>();
+    public final List<String> stagr = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

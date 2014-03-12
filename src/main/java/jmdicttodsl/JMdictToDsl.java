@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -22,6 +22,7 @@ import org.stringtemplate.v4.STGroupFile;
  * @author Oleg Tolmatcev
  */
 public class JMdictToDsl extends javax.swing.JFrame {
+    private static final Logger LOGGER = Logger.getLogger(JMdictToDsl.class.getName());
 
     private Date start;
     private boolean isBusy = false;
@@ -32,10 +33,10 @@ public class JMdictToDsl extends javax.swing.JFrame {
 
     class Task extends SwingWorker<Void, Void> {
 
-        private File inFile;
-        private String language;
-        private String templateLanguage;
-        private String format;
+        private final File inFile;
+        private final String language;
+        private final String templateLanguage;
+        private final String format;
         private File outFile;
 
         public Task(File file, String lang, String template, String format) {
@@ -46,14 +47,13 @@ public class JMdictToDsl extends javax.swing.JFrame {
         }
 
         @Override
+        @SuppressWarnings("DeadBranch")
         protected Void doInBackground() throws Exception {
-            Writer writer = null;
 
             textArea.append(String.format("Starting conversion to %1$s using %2$s.\n",
                     language, templateLanguage));
             start = new Date();
 
-            try {
                 String fileName;
                 if (inFile.getName().endsWith(".gz")) {
                     fileName = inFile.getName().substring(0, inFile.getName().length() - 3);
@@ -64,14 +64,15 @@ public class JMdictToDsl extends javax.swing.JFrame {
                 outFile = new File(inFile.getParentFile(), fileName);
                 if (outFile.exists())
                     outFile.delete();
-                writer = new OutputStreamWriter(new FileOutputStream(outFile), "UTF-16");
-//                writer = new FileWriter(outFile, true);
-
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(outFile), "UTF-16")) {
                 String lang = createLang(language);
                 Converter converter = createConverter(inFile, writer, lang);
                 if (false) {
+                    @SuppressWarnings("UnusedAssignment")
                     MyContentHandler handler = new MyContentHandler(lang, converter);
+                    @SuppressWarnings("UnusedAssignment")
                     SAXParserFactory factory = SAXParserFactory.newInstance();
+                    @SuppressWarnings("UnusedAssignment")
                     SAXParser saxParser = factory.newSAXParser();
                     saxParser.parse(inFile, handler);
                 } else {
@@ -87,14 +88,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
                     converter.finish();
                 }
             } catch (Exception ex) {
-                Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                if (writer != null)
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             return null;
         }
@@ -293,13 +287,14 @@ public class JMdictToDsl extends javax.swing.JFrame {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
+            @SuppressWarnings("ResultOfObjectAllocationIgnored")
             public void run() {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     new JMdictToDsl();
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                         UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(JMdictToDsl.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         });

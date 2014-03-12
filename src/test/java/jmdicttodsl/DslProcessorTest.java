@@ -1,14 +1,13 @@
 /*
- * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2013 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
 import java.util.Arrays;
+import static java.util.Arrays.asList;
 import java.util.List;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,7 +36,7 @@ public class DslProcessorTest extends JmdictTest {
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditions();
 
         DslEntry dslEntry = new DslEntry();
-        dslEntry.index = Arrays.asList("天気運", "てんきうん");
+        dslEntry.index.addAll(asList("天気運", "てんきうん"));
         Entry entry = new Entry();
         entry.kana = "てんきうん";
         entry.kanji = "天気運";

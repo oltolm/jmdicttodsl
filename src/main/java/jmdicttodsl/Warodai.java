@@ -14,10 +14,7 @@ import java.util.regex.Pattern;
  */
 public class Warodai {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main (String[] args) throws FileNotFoundException, UnsupportedEncodingException, IOException {
+    public static void main (String[] args) throws Exception {
         String infile = null;
         String outfile = null;
         if (args.length == 2) {

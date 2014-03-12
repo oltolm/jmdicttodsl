@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg_tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2012 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 package jmdicttodsl;
 
@@ -18,11 +18,11 @@ import java.util.Objects;
 class Reading {
     public String reb;
     @XStreamImplicit(itemFieldName="re_inf")
-    public List<String> re_inf = new ArrayList<>();
+    public final List<String> re_inf = new ArrayList<>();
     @XStreamImplicit(itemFieldName="re_restr")
-    public List<String> re_restr = new ArrayList<>();
+    public final List<String> re_restr = new ArrayList<>();
     @XStreamOmitField
-    public List<Sense> sense = new ArrayList<>();
+    public final List<Sense> sense = new ArrayList<>();
 
     @Override
     public int hashCode() {
