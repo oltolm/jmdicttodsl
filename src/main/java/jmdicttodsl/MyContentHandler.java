@@ -3,8 +3,6 @@
  */
 package jmdicttodsl;
 
-import java.io.File;
-import java.io.Writer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -18,10 +16,10 @@ class MyContentHandler extends DefaultHandler {
 
     private StringBuilder builder;
     /** Value of the xml:lang attribute. */
-    private String lang;
-    private String glossLang;
-    private Converter converter;
+    private final String lang;
+    private final Converter converter;
 
+    private String glossLang;
     private XmlEntry entry;
     private Kanji kanji;
     private Reading reading;

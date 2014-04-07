@@ -11,35 +11,41 @@ import java.util.*;
  */
 class DslProcessor {
     public List<DslEntry> process(XmlEntry entry) {
-        List<Entry> entries = new ArrayList<>();
         Map<String, Kanji> ktable = new HashMap<>();
         Map<String, Reading> rtable = new HashMap<>();
         List<Sense> senses = new ArrayList<>();
 
-        for (Kanji k_ele : entry.k_ele)
+        for (Kanji k_ele : entry.k_ele) {
             ktable.put(k_ele.keb, k_ele);
-
-        for (Reading r_ele : entry.r_ele)
+        }
+        for (Reading r_ele : entry.r_ele) {
             rtable.put(r_ele.reb, r_ele);
-
-        for (Sense sense : entry.sense)
-            if (!sense.stagk.isEmpty())
-                for (String k : sense.stagk)
+        }
+        for (Sense sense : entry.sense) {
+            if (!sense.stagk.isEmpty()) {
+                for (String k : sense.stagk) {
                     ktable.get(k).sense.add(sense);
-            else if (!sense.stagr.isEmpty())
-                for (String r : sense.stagr)
+                }
+            } else if (!sense.stagr.isEmpty()) {
+                for (String r : sense.stagr) {
                     rtable.get(r).sense.add(sense);
-            else
+                }
+            } else {
                 senses.add(sense);
+            }
+        }
         // cross product of kanji and readings
-        for (Reading r : rtable.values())
-            if (!r.re_restr.isEmpty())
-                for (String k : r.re_restr)
+        List<Entry> entries = new ArrayList<>();
+        for (Reading r : rtable.values()) {
+            if (!r.re_restr.isEmpty()) {
+                for (String k : r.re_restr) {
                     addEntry(ktable, k, r, senses, entries);
-            else if (!entry.k_ele.isEmpty())
-                for (Kanji k_ele : entry.k_ele)
+                }
+            } else if (!entry.k_ele.isEmpty()) {
+                for (Kanji k_ele : entry.k_ele) {
                     addEntry(ktable, k_ele.keb, r, senses, entries);
-            else {
+                }
+            } else {
                 Entry newEntry = new Entry();
                 newEntry.kana = r.reb;
                 newEntry.info.clear();
@@ -48,6 +54,7 @@ class DslProcessor {
                 newEntry.senses.addAll(senses);
                 entries.add(newEntry);
             }
+        }
 
         List<DslEntry> dslEntries = mergeEntries(entries);
         dslEntries = filterEntries(dslEntries);
@@ -55,9 +62,8 @@ class DslProcessor {
     }
 
     private List<DslEntry> filterEntries(List<DslEntry> entries) {
-        Set<String> index;
         for (DslEntry dslEntry : entries) {
-            index = new HashSet<>();
+            Set<String> index = new HashSet<>();
             for (Entry entry : dslEntry.entry) {
                 index.add(entry.kana);
                 index.add(entry.kanji);
@@ -84,8 +90,9 @@ class DslProcessor {
         List<DslEntry> retval = new ArrayList<>();
         for (int i = 0; i < entries.size(); ++i) {
             Entry entry = entries.get(i);
-            if (entry == null)
+            if (entry == null) {
                 continue;
+            }
             entries.set(i, null);
             DslEntry dslEntry = new DslEntry();
             dslEntry.entry.add(entry);
@@ -94,8 +101,9 @@ class DslProcessor {
 
             for (int j = i + 1; j < entries.size(); ++j) {
                 Entry entry1 = entries.get(j);
-                if (entry1 == null)
+                if (entry1 == null) {
                     continue;
+                }
                 if (dslEntry.sense.equals(entry1.senses)) {
                     entry1.senses.clear();
                     dslEntry.entry.add(entry1);

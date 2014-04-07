@@ -30,33 +30,8 @@ class StlDslConverter implements Converter, Procedure<XmlEntry> {
     @Override
     public void doit(XmlEntry xmlEntry) throws IOException {
         List<DslEntry> dslEntries = processor.process(xmlEntry);
-        List<String> names = Arrays.asList("pos", "field", "misc",
-                "dial", "lsource", "gloss", "xref");
-
         for (DslEntry dslEntry : dslEntries) {
-            List<String> senses = new ArrayList<>();
-            for (Sense sense : dslEntry.sense) {
-                // STL evaluates an attribute to false only if it is "null" or
-                // "false".
-                for (LSource lsource : sense.lsource)
-                    if (lsource.text != null && lsource.text.isEmpty())
-                        lsource.text = null;
-
-                List<String> attributes = new ArrayList<>();
-                for (String name : names) {
-                    ST st = group.getInstanceOf(name);
-                    st.add("sense", sense);
-                    String result = st.render();
-                    if (!result.equals(""))
-                        attributes.add(result);
-                }
-
-                if (!attributes.isEmpty()) {
-                    ST st = group.getInstanceOf("join");
-                    st.add("list", attributes);
-                    senses.add(st.render());
-                }
-            }
+            List<String> senses = processSenses(dslEntry);
             ST st = group.getInstanceOf("senses");
             st.add("index", dslEntry.index);
             st.add("entries", dslEntry.entry);
@@ -65,6 +40,34 @@ class StlDslConverter implements Converter, Procedure<XmlEntry> {
             appender.append(st.render());
             appender.append("\r\n\r\n");
         }
+    }
+
+    private List<String> processSenses(DslEntry dslEntry) {
+        List<String> names = Arrays.asList("pos", "field", "misc",
+                "dial", "lsource", "gloss", "xref");
+        List<String> senses = new ArrayList<>();
+        for (Sense sense : dslEntry.sense) {
+            // STL evaluates an attribute to false only if it is "null" or
+            // "false".
+            for (LSource lsource : sense.lsource) {
+                if (lsource.text != null && lsource.text.isEmpty())
+                    lsource.text = null;
+            }
+            List<String> attributes = new ArrayList<>();
+            for (String name : names) {
+                ST st = group.getInstanceOf(name);
+                st.add("sense", sense);
+                String result = st.render();
+                if (!result.isEmpty())
+                    attributes.add(result);
+            }
+            if (!attributes.isEmpty()) {
+                ST st = group.getInstanceOf("join");
+                st.add("list", attributes);
+                senses.add(st.render());
+            }
+        }
+        return senses;
     }
 
     @Override

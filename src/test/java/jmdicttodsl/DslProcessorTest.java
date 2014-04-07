@@ -3,7 +3,6 @@
  */
 package jmdicttodsl;
 
-import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
 import org.junit.After;
@@ -44,7 +43,7 @@ public class DslProcessorTest extends JmdictTest {
         dslEntry.sense.add(xmlEntry.sense.get(0));
 
         DslProcessor instance = new DslProcessor();
-        List<DslEntry> expResult = Arrays.asList(dslEntry);
+        List<DslEntry> expResult = asList(dslEntry);
         List<DslEntry> result = instance.process(xmlEntry);
         assertEquals(expResult, result);
     }
