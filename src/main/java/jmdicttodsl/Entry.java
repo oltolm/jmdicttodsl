@@ -19,8 +19,6 @@ class Entry {
     public String kanji;
     @XStreamImplicit(itemFieldName="info")
     public final List<String> info = new ArrayList<>();
-    @XStreamImplicit
-    public final List<Sense> senses = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {
@@ -35,8 +33,6 @@ class Entry {
             return false;
         if ((this.kana == null) ? (other.kana != null) : !this.kana.equals(other.kana))
             return false;
-        if (this.senses != other.senses && (this.senses == null || !this.senses.equals(other.senses)))
-            return false;
         return true;
     }
 
@@ -48,6 +44,6 @@ class Entry {
 
     @Override
     public String toString() {
-        return "Entry{" + "kana=" + kana + ", kanji=" + kanji + ", info=" + info + ", senses=" + senses + '}';
+        return "Entry{" + "kana=" + kana + ", kanji=" + kanji + ", info=" + info + '}';
     }
 }

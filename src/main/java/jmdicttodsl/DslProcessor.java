@@ -3,7 +3,13 @@
  */
 package jmdicttodsl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 
 /**
  *
@@ -11,16 +17,22 @@ import java.util.*;
  */
 class DslProcessor {
     public List<DslEntry> process(XmlEntry entry) {
-        Map<String, Kanji> ktable = new HashMap<>();
-        Map<String, Reading> rtable = new HashMap<>();
         List<Sense> senses = new ArrayList<>();
+        Map<String, Kanji> ktable = entry.k_ele.stream()
+                .collect(toMap(k_ele -> k_ele.keb, identity()));
+        Map<String, Reading> rtable = entry.r_ele.stream()
+                .collect(toMap(r_ele -> r_ele.reb, identity()));
 
-        for (Kanji k_ele : entry.k_ele) {
-            ktable.put(k_ele.keb, k_ele);
-        }
-        for (Reading r_ele : entry.r_ele) {
-            rtable.put(r_ele.reb, r_ele);
-        }
+        fillTables(entry, ktable, rtable, senses);
+
+        Map<Entry, List<Sense>> map = crossProduct(entry, ktable, rtable, senses);
+
+        List<DslEntry> dslEntries = mergeEntries(map);
+        createIndex(dslEntries);
+        return dslEntries;
+    }
+
+    private void fillTables(XmlEntry entry, Map<String, Kanji> ktable, Map<String, Reading> rtable, List<Sense> senses) {
         for (Sense sense : entry.sense) {
             if (!sense.stagk.isEmpty()) {
                 for (String k : sense.stagk) {
@@ -34,85 +46,70 @@ class DslProcessor {
                 senses.add(sense);
             }
         }
+    }
+
+    private Map<Entry, List<Sense>> crossProduct(XmlEntry entry,
+            Map<String, Kanji> ktable,
+            Map<String, Reading> rtable,
+            List<Sense> senses) {
+        Map<Entry, List<Sense>> map = new HashMap<>();
         // cross product of kanji and readings
-        List<Entry> entries = new ArrayList<>();
         for (Reading r : rtable.values()) {
             if (!r.re_restr.isEmpty()) {
                 for (String k : r.re_restr) {
-                    addEntry(ktable, k, r, senses, entries);
+                    putEntry(ktable.get(k), r, senses, map);
                 }
             } else if (!entry.k_ele.isEmpty()) {
                 for (Kanji k_ele : entry.k_ele) {
-                    addEntry(ktable, k_ele.keb, r, senses, entries);
+                    putEntry(ktable.get(k_ele.keb), r, senses, map);
                 }
             } else {
                 Entry newEntry = new Entry();
                 newEntry.kana = r.reb;
-                newEntry.info.clear();
                 newEntry.info.addAll(r.re_inf);
-                newEntry.senses.addAll(r.sense);
-                newEntry.senses.addAll(senses);
-                entries.add(newEntry);
+                List<Sense> allSenses = new ArrayList<>();
+                allSenses.addAll(r.sense);
+                allSenses.addAll(senses);
+                map.put(newEntry, allSenses);
             }
         }
-
-        List<DslEntry> dslEntries = mergeEntries(entries);
-        dslEntries = filterEntries(dslEntries);
-        return dslEntries;
+        return map;
     }
 
-    private List<DslEntry> filterEntries(List<DslEntry> entries) {
+    private void createIndex(List<DslEntry> entries) {
         for (DslEntry dslEntry : entries) {
-            Set<String> index = new HashSet<>();
             for (Entry entry : dslEntry.entry) {
-                index.add(entry.kana);
-                index.add(entry.kanji);
+                dslEntry.index.add(entry.kana);
+                dslEntry.index.add(entry.kanji);
             }
-            dslEntry.index.addAll(index);
         }
-        return entries;
     }
 
-    private void addEntry(Map<String, Kanji> ktable, String k, Reading r, List<Sense> senses, List<Entry> entries) {
-        Kanji k1 = ktable.get(k);
+    private void putEntry(Kanji k1, Reading r, List<Sense> senses,
+            Map<Entry, List<Sense>> map) {
         Entry entry = new Entry();
         entry.info.addAll(r.re_inf);
         entry.info.addAll(k1.ke_inf);
         entry.kanji = k1.keb;
         entry.kana = r.reb;
-        entry.senses.addAll(r.sense);
-        entry.senses.addAll(k1.sense);
-        entry.senses.addAll(senses);
-        entries.add(entry);
+        List<Sense> allSenses = new ArrayList<>();
+        allSenses.addAll(r.sense);
+        allSenses.addAll(k1.sense);
+        allSenses.addAll(senses);
+        map.put(entry, allSenses);
     }
 
-    private List<DslEntry> mergeEntries(List<Entry> entries) {
-        List<DslEntry> retval = new ArrayList<>();
-        for (int i = 0; i < entries.size(); ++i) {
-            Entry entry = entries.get(i);
-            if (entry == null) {
-                continue;
-            }
-            entries.set(i, null);
+    private List<DslEntry> mergeEntries(Map<Entry, List<Sense>> map) {
+        Map<List<Sense>, List<Entry>> map1 = map.keySet().stream()
+                .collect(groupingBy(entry -> map.get(entry)));
+        List<DslEntry> result = new ArrayList<>();
+        for (List<Entry> es : map1.values()) {
             DslEntry dslEntry = new DslEntry();
-            dslEntry.entry.add(entry);
-            dslEntry.sense.addAll(entry.senses);
-            entry.senses.clear();
-
-            for (int j = i + 1; j < entries.size(); ++j) {
-                Entry entry1 = entries.get(j);
-                if (entry1 == null) {
-                    continue;
-                }
-                if (dslEntry.sense.equals(entry1.senses)) {
-                    entry1.senses.clear();
-                    dslEntry.entry.add(entry1);
-                    entries.set(j, null);
-                }
-            }
-            retval.add(dslEntry);
+            dslEntry.entry.addAll(es);
+            dslEntry.sense.addAll(map.get(es.get(0)));
+            result.add(dslEntry);
         }
-        return retval;
+        return result;
     }
 
 }
