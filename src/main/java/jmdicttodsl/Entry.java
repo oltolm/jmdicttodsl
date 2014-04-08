@@ -3,8 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +10,10 @@ import java.util.List;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("entry")
 class Entry {
 
     public String kana;
     public String kanji;
-    @XStreamImplicit(itemFieldName="info")
     public final List<String> info = new ArrayList<>();
 
     @Override

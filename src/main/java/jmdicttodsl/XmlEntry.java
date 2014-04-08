@@ -3,8 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,14 +11,10 @@ import java.util.Objects;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("entry")
 public class XmlEntry {
 
-    @XStreamImplicit
     public final List<Kanji> k_ele = new ArrayList<>();
-    @XStreamImplicit
     public final List<Reading> r_ele = new ArrayList<>();
-    @XStreamImplicit
     public final List<Sense> sense = new ArrayList<>();
 
     @Override

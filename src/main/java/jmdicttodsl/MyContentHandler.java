@@ -102,11 +102,7 @@ class MyContentHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case "entry":
-                try {
-                    converter.doit(entry);
-                } catch (Exception ex) {
-                    throw new SAXException(ex);
-                }
+                converter.accept(entry);
                 break;
             case "keb":
                 kanji.keb = builder.toString();

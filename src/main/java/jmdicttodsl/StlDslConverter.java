@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -30,8 +28,7 @@ class StlDslConverter implements Converter, Consumer<XmlEntry> {
         this.group = group;
     }
 
-    @Override
-    public void doit(XmlEntry xmlEntry) throws IOException {
+    private void doit(XmlEntry xmlEntry) throws IOException {
         List<DslEntry> dslEntries = processor.process(xmlEntry);
         for (DslEntry dslEntry : dslEntries) {
             List<String> senses = processSenses(dslEntry);

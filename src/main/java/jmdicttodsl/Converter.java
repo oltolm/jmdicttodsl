@@ -3,12 +3,13 @@
  */
 package jmdicttodsl;
 
+import java.util.function.Consumer;
+
 /**
  *
  * @author Oleg Tolmatcev
  */
-interface Converter {
-    public void doit(XmlEntry entry) throws Exception;
+interface Converter extends Consumer<XmlEntry> {
     public void finish() throws Exception;
     public void writeHeader() throws Exception;
 }

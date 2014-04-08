@@ -3,20 +3,13 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 
 /**
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("lsource")
-@XStreamConverter(value=ToAttributedValueConverter.class, strings={"text"})
 public class LSource {
 
-    @XStreamAsAttribute
     public String lang;
     public String text;
 

@@ -4,12 +4,13 @@
 package jmdicttodsl;
 
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static java.util.function.Function.identity;
+import java.util.Set;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  *
@@ -18,15 +19,21 @@ import static java.util.stream.Collectors.toMap;
 class DslProcessor {
     public List<DslEntry> process(XmlEntry entry) {
         List<Sense> senses = new ArrayList<>();
-        Map<String, Kanji> ktable = entry.k_ele.stream()
-                .collect(toMap(k_ele -> k_ele.keb, identity()));
-        Map<String, Reading> rtable = entry.r_ele.stream()
-                .collect(toMap(r_ele -> r_ele.reb, identity()));
+//        Map<String, Kanji> ktable = entry.k_ele.stream()
+//                .collect(toMap(k_ele -> k_ele.keb, identity()));
+//        Map<String, Reading> rtable = entry.r_ele.stream()
+//                .collect(toMap(r_ele -> r_ele.reb, identity()));
+        Map<String, Kanji> ktable = new HashMap<>();
+        for (Kanji k_ele : entry.k_ele) {
+            ktable.put(k_ele.keb, k_ele);
+        }
+        Map<String, Reading> rtable = new HashMap<>();
+        for (Reading r_ele : entry.r_ele) {
+            rtable.put(r_ele.reb, r_ele);
+        }
 
         fillTables(entry, ktable, rtable, senses);
-
         Map<Entry, List<Sense>> map = crossProduct(entry, ktable, rtable, senses);
-
         List<DslEntry> dslEntries = mergeEntries(map);
         createIndex(dslEntries);
         return dslEntries;
@@ -61,7 +68,7 @@ class DslProcessor {
                 }
             } else if (!entry.k_ele.isEmpty()) {
                 for (Kanji k_ele : entry.k_ele) {
-                    putEntry(ktable.get(k_ele.keb), r, senses, map);
+                    putEntry(k_ele, r, senses, map);
                 }
             } else {
                 Entry newEntry = new Entry();
@@ -78,10 +85,10 @@ class DslProcessor {
 
     private void createIndex(List<DslEntry> entries) {
         for (DslEntry dslEntry : entries) {
-            for (Entry entry : dslEntry.entry) {
-                dslEntry.index.add(entry.kana);
-                dslEntry.index.add(entry.kanji);
-            }
+            Set<String> index = dslEntry.entry.stream()
+                    .flatMap(entry -> asList(entry.kanji, entry.kana).stream())
+                    .collect(toSet());
+            dslEntry.index.addAll(index);
         }
     }
 

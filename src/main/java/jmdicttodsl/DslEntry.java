@@ -3,8 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,13 +13,9 @@ import java.util.Set;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("DslEntry")
 class DslEntry {
-    @XStreamImplicit(itemFieldName="index")
     public final Set<String> index =  new HashSet<>();
-    @XStreamImplicit
     public final List<Entry> entry = new ArrayList<>();
-    @XStreamImplicit
     public final List<Sense> sense = new ArrayList<>();
 
     @Override

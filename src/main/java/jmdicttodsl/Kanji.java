@@ -3,9 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,12 +11,9 @@ import java.util.Objects;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("k_ele")
 public class Kanji {
     public String keb;
-    @XStreamImplicit(itemFieldName="ke_inf")
     public final List<String> ke_inf = new ArrayList<>();
-    @XStreamOmitField
     public final List<Sense> sense = new ArrayList<>();
 
     @Override

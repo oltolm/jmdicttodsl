@@ -3,8 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,25 +10,15 @@ import java.util.List;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("sense")
 public class Sense {
-    @XStreamImplicit(itemFieldName="pos")
     public final List<String> pos = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="field")
     public final List<String> field = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="misc")
     public final List<String> misc = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="dial")
     public final List<String> dial = new ArrayList<>();
-    @XStreamImplicit
     public final List<LSource> lsource = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="gloss")
     public final List<String> gloss = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="xref")
     public final List<String> xref = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="stagk")
     public final List<String> stagk = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="stagr")
     public final List<String> stagr = new ArrayList<>();
 
     @Override

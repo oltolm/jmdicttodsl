@@ -3,9 +3,6 @@
  */
 package jmdicttodsl;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,14 +11,10 @@ import java.util.Objects;
  *
  * @author Oleg Tolmatcev
  */
-@XStreamAlias("r_ele")
 public class Reading {
     public String reb;
-    @XStreamImplicit(itemFieldName="re_inf")
     public final List<String> re_inf = new ArrayList<>();
-    @XStreamImplicit(itemFieldName="re_restr")
     public final List<String> re_restr = new ArrayList<>();
-    @XStreamOmitField
     public final List<Sense> sense = new ArrayList<>();
 
     @Override

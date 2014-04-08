@@ -25,8 +25,7 @@ class StlEdictConverter implements Converter, Consumer<XmlEntry> {
         this.group = group;
     }
 
-    @Override
-    public void doit(XmlEntry xmlEntry) throws IOException {
+    private void doit(XmlEntry xmlEntry) throws IOException {
         for (Reading r_ele : xmlEntry.r_ele)
             if (!xmlEntry.k_ele.isEmpty())
                 for (Kanji k_ele : xmlEntry.k_ele)
