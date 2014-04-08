@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -14,7 +15,7 @@ import org.stringtemplate.v4.STGroup;
  *
  * @author Oleg Tolmatcev
  */
-class StlEdictConverter implements Converter, Procedure<XmlEntry> {
+class StlEdictConverter implements Converter, Consumer<XmlEntry> {
 
     private final Appendable appender;
     private final STGroup group;
@@ -82,7 +83,11 @@ class StlEdictConverter implements Converter, Procedure<XmlEntry> {
     }
 
     @Override
-    public void apply(XmlEntry arg) throws Exception {
-        doit(arg);
+    public void accept(XmlEntry arg) {
+        try {
+            doit(arg);
+        } catch (IOException ex) {
+            throw Sneak.sneakyThrow(ex);
+        }
     }
 }

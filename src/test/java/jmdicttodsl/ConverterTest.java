@@ -17,14 +17,14 @@ import org.stringtemplate.v4.STGroupFile;
  * @author Oleg Tolmatcev
  */
 public class ConverterTest extends JmdictTest {
-    
+
     public ConverterTest() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -35,7 +35,7 @@ public class ConverterTest extends JmdictTest {
         XmlEntry xmlEntry = createXmlEntryForWeatherConditions();
         STGroup group = createGroup("dsl.stg");
         StlDslConverter converter = new StlDslConverter(group, writer, "eng");
-        converter.apply(xmlEntry);
+        converter.accept(xmlEntry);
         String dslString = "天気運\r\n" +
 "てんきうん\r\n" +
 "	[m1][c maroon]てんきうん[/c][c navy]【天気運】[/c][/m]\r\n" +
@@ -49,11 +49,11 @@ public class ConverterTest extends JmdictTest {
         XmlEntry xmlEntry = createXmlEntryForWeatherConditions();
         STGroup group = createGroup("edict.stg");
         StlEdictConverter converter = new StlEdictConverter(group, writer, "eng");
-        converter.apply(xmlEntry);
+        converter.accept(xmlEntry);
         String edictString = "天気運 [てんきうん] /(n) weather conditions/\n";
         assertEquals(edictString, writer.getBuffer().toString());
     }
-     
+
     private STGroup createGroup(String name) {
         URL resource = getClass().getResource("/" + name);
         return new STGroupFile(resource, "UTF-8", '<', '>');

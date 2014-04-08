@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.io.xml.TraxSource;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
+import java.util.function.Consumer;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -20,7 +21,7 @@ import javax.xml.transform.stream.StreamSource;
  *
  * @author Oleg Tolmatcev
  */
-class XsltEdictConverter implements Converter, Procedure<XmlEntry> {
+class XsltEdictConverter implements Converter, Consumer<XmlEntry> {
 
     private final Writer writer;
     private final XStream xstream;
@@ -54,7 +55,11 @@ class XsltEdictConverter implements Converter, Procedure<XmlEntry> {
     }
 
     @Override
-    public void apply(XmlEntry arg) throws Exception {
-        doit(arg);
+    public void accept(XmlEntry arg) {
+        try {
+            doit(arg);
+        } catch (TransformerException ex) {
+            throw Sneak.sneakyThrow(ex);
+        }
     }
 }

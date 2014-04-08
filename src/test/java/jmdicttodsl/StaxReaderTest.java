@@ -4,13 +4,11 @@
 package jmdicttodsl;
 
 import java.io.StringReader;
-import java.util.Arrays;
+import java.util.function.Consumer;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -52,15 +50,11 @@ public class StaxReaderTest extends JmdictTest {
 
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditions();
 
-        Procedure<XmlEntry> proc = new Procedure<XmlEntry>() {
-
-            @Override
-            public void apply(XmlEntry arg) throws Exception {
-                assertEquals(xmlEntry, arg);
-            }
+        Consumer<XmlEntry> consumer = (XmlEntry arg) -> {
+            assertEquals(xmlEntry, arg);
         };
         StringReader reader = new StringReader(entry);
-        StaxReader instance = new StaxReader(reader, lang, proc);
+        StaxReader instance = new StaxReader(reader, lang, consumer);
         instance.doit();
     }
 
@@ -84,15 +78,11 @@ public class StaxReaderTest extends JmdictTest {
 
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditionsGerman();
 
-        Procedure<XmlEntry> proc = new Procedure<XmlEntry>() {
-
-            @Override
-            public void apply(XmlEntry arg) throws Exception {
-                assertEquals(xmlEntry, arg);
-            }
+        Consumer<XmlEntry> consumer = (XmlEntry arg) -> {
+            assertEquals(xmlEntry, arg);
         };
         StringReader reader = new StringReader(entry);
-        StaxReader instance = new StaxReader(reader, lang, proc);
+        StaxReader instance = new StaxReader(reader, lang, consumer);
         instance.doit();
     }
 

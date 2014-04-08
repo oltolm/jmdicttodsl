@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -84,7 +85,7 @@ public class JMdictToDsl extends javax.swing.JFrame {
                     }
                     converter.writeHeader();
                     InputStreamReader reader = new InputStreamReader(inputStream);
-                    StaxReader staxReader = new StaxReader(reader, lang, (Procedure<XmlEntry>) converter);
+                    StaxReader staxReader = new StaxReader(reader, lang, (Consumer<XmlEntry>) converter);
                     staxReader.doit();
                     converter.finish();
                 }

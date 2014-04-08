@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -14,7 +17,7 @@ import org.stringtemplate.v4.STGroup;
  *
  * @author Oleg Tolmatcev
  */
-class StlDslConverter implements Converter, Procedure<XmlEntry> {
+class StlDslConverter implements Converter, Consumer<XmlEntry> {
 
     private final Appendable appender;
     private final STGroup group;
@@ -61,6 +64,7 @@ class StlDslConverter implements Converter, Procedure<XmlEntry> {
                 if (!result.isEmpty())
                     attributes.add(result);
             }
+
             if (!attributes.isEmpty()) {
                 ST st = group.getInstanceOf("join");
                 st.add("list", attributes);
@@ -97,7 +101,11 @@ class StlDslConverter implements Converter, Procedure<XmlEntry> {
     }
 
     @Override
-    public void apply(XmlEntry arg) throws Exception {
-        doit(arg);
+    public void accept(XmlEntry arg) {
+        try {
+            doit(arg);
+        } catch (IOException ex) {
+            throw Sneak.sneakyThrow(ex);
+        }
     }
 }

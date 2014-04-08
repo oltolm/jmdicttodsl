@@ -4,6 +4,7 @@
 package jmdicttodsl;
 
 import java.io.Reader;
+import java.util.function.Consumer;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
@@ -14,13 +15,13 @@ import javax.xml.stream.XMLStreamReader;
  */
 class StaxReader {
 
-    private final Procedure<XmlEntry> proc;
+    private final Consumer<XmlEntry> consumer;
     private final Reader reader;
     /** The value of the xml:lang attribute. */
     private final String lang;
 
-    StaxReader(Reader reader, String lang, Procedure<XmlEntry> proc) {
-        this.proc = proc;
+    StaxReader(Reader reader, String lang, Consumer<XmlEntry> consumer) {
+        this.consumer = consumer;
         this.reader = reader;
         this.lang = lang;
     }
@@ -107,7 +108,7 @@ class StaxReader {
                     switch (xmlReader.getLocalName()) {
                         case "entry":
                             if (!entry.sense.isEmpty())
-                                proc.apply(entry);
+                                consumer.accept(entry);
                             break;
                         case "k_ele":
                             entry.k_ele.add(kanji);
