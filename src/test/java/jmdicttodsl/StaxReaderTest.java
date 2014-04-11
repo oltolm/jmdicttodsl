@@ -27,9 +27,6 @@ public class StaxReaderTest extends JmdictTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of doit method, of class StaxReader.
-     */
     @Test
     public void testDoit() throws Exception {
         String lang = "eng";

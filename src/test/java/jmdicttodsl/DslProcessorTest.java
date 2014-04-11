@@ -27,9 +27,6 @@ public class DslProcessorTest extends JmdictTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of process method, of class DslProcessor.
-     */
     @Test
     public void testProcess() {
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditions();

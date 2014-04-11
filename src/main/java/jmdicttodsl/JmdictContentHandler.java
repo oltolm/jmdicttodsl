@@ -12,7 +12,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Oleg Tolmatcev
  */
-class MyContentHandler extends DefaultHandler {
+class JmdictContentHandler extends DefaultHandler {
 
     private StringBuilder builder;
     /** Value of the xml:lang attribute. */
@@ -41,7 +41,7 @@ class MyContentHandler extends DefaultHandler {
         throw e;
     }
 
-    public MyContentHandler(String lang, Converter converter) {
+    public JmdictContentHandler(String lang, Converter converter) {
         this.converter = converter;
         this.entry = null;
         this.builder = null;
