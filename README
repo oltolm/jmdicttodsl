@@ -1,15 +1,11 @@
-JMDictToDSL A converter from JMDict to DSL and EDICT
-Copyright (C) 2011-2013 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
+# JmdictToDsl
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+## Description
+JmdictToDsl can convert the JMdict dictionary to DSL and EDICT formats.
+[JMdict](http://www.edrdg.org/jmdict/j_jmdict.html) is a Japanese-Multilingual dictionary.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+JmdictToDsl can also convert [Большой словарь японского языка](http://e-lib.ua/dic/)
+(ewarodai.txt) to the DSL format.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## License
+JmdictToDsl is licensed under GPL3+. See gpl-3.0.txt.
