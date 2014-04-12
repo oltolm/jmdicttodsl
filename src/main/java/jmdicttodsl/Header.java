@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
+ * Copyright (C) 2011-2014 Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package jmdicttodsl;
 
 /**
