@@ -27,12 +27,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import static java.lang.String.format;
 import java.net.URL;
+import static java.nio.charset.StandardCharsets.UTF_16;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.Date;
-import java.util.logging.Level;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import javax.swing.SwingWorker;
@@ -44,15 +45,15 @@ import org.stringtemplate.v4.STGroupFile;
  * @author Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 class JmdictTask extends SwingWorker<Void, Void> {
+    private final static Logger LOGGER = Logger.getLogger(JmdictTask.class.getName());
     private final File inFile;
     private final String language;
     private final String format;
     private File outFile;
     private final JmdictToDsl frame;
-    private final static Logger LOGGER = Logger.getLogger(JmdictTask.class.getName());
     private Date start;
 
-    public JmdictTask(File file, String lang, String format, final JmdictToDsl frame) {
+    public JmdictTask(File file, String lang, String format, JmdictToDsl frame) {
         this.frame = frame;
         this.inFile = file;
         this.language = lang;
@@ -67,10 +68,9 @@ class JmdictTask extends SwingWorker<Void, Void> {
         if (outFile.exists())
             outFile.delete();
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile),
-                "UTF-16LE"));
+                UTF_16));
              Reader reader = new BufferedReader(new InputStreamReader(createInputStream(inFile),
-                     "UTF-8"))) {
-            writer.write('\uFEFF');
+                     UTF_8))) {
             String lang = createLang(language);
             Converter converter = createConverter(inFile, writer, lang, format);
             //                    MyContentHandler handler = new MyContentHandler(lang, converter);
@@ -81,7 +81,8 @@ class JmdictTask extends SwingWorker<Void, Void> {
             StaxReader staxReader = new StaxReader(reader, lang, converter);
             staxReader.doit();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(SEVERE, null, ex);
+            System.exit(1);
         }
         return null;
     }
@@ -102,7 +103,7 @@ class JmdictTask extends SwingWorker<Void, Void> {
         return format("%s.%s", fileName, format.toLowerCase());
     }
 
-    private InputStream createInputStream(File inFile) throws IOException, UnsupportedEncodingException {
+    private InputStream createInputStream(File inFile) throws IOException {
         if (inFile.getName().endsWith(".gz")) {
             return new GZIPInputStream(new FileInputStream(inFile));
         } else {
@@ -142,15 +143,13 @@ class JmdictTask extends SwingWorker<Void, Void> {
     }
 
     private STGroupFile createSTGroup(File file, String name) {
-        STGroupFile group;
         String fileName = file.getParent() + File.separator + name;
         if (new File(fileName).exists()) {
-            group = new STGroupFile(fileName);
+            return new STGroupFile(fileName);
         } else  {
             URL resource = getClass().getResource("/" + name);
-            group = new STGroupFile(resource, "UTF-8", '<', '>');
+            return new STGroupFile(resource, "UTF-8", '<', '>');
         }
-        return group;
     }
 
 }

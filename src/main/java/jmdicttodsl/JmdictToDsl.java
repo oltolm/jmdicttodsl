@@ -5,15 +5,12 @@ package jmdicttodsl;
 
 import static java.lang.String.format;
 import java.io.*;
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
 import javax.swing.*;
-import javax.xml.transform.TransformerConfigurationException;
-import org.stringtemplate.v4.STGroupFile;
 
 /**
  *
@@ -40,8 +37,8 @@ public class JmdictToDsl extends javax.swing.JFrame {
         setVisible(true);
         jmdictPanel.setTransferHandler(new JmdictTransferhandler(t -> !isBusy,
                 this::convertJmdict));
-        jmdictPanel.setTransferHandler(new JmdictTransferhandler(t -> !isBusy,
-                this::convertJmdict));
+        warodaiPanel.setTransferHandler(new JmdictTransferhandler(t -> !isBusy,
+                this::convertWarodai));
     }
 
     /**
@@ -69,6 +66,8 @@ public class JmdictToDsl extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JMDict to DSL");
+
+        panel.setPreferredSize(new java.awt.Dimension(600, 400));
 
         textArea.setEditable(false);
         textArea.setColumns(20);
@@ -125,7 +124,7 @@ public class JmdictToDsl extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("JMDict", jmdictPanel);
 
-        jLabel1.setText("Drop file \"ewarodai\" here.");
+        jLabel1.setText("Drop file \"ewarodai.txt\" here.");
 
         javax.swing.GroupLayout warodaiPanelLayout = new javax.swing.GroupLayout(warodaiPanel);
         warodaiPanel.setLayout(warodaiPanelLayout);
@@ -134,7 +133,7 @@ public class JmdictToDsl extends javax.swing.JFrame {
             .addGroup(warodaiPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(244, Short.MAX_VALUE))
+                .addContainerGap(423, Short.MAX_VALUE))
         );
         warodaiPanelLayout.setVerticalGroup(
             warodaiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,6 +144,8 @@ public class JmdictToDsl extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("Warodai", warodaiPanel);
+
+        jTabbedPane1.setSelectedIndex(1);
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
@@ -164,7 +165,7 @@ public class JmdictToDsl extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -189,6 +190,12 @@ public class JmdictToDsl extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         System.setProperty("entityExpansionLimit", "1000000");
+        try (InputStream is = JmdictToDsl.class.getResourceAsStream("/logging.properties")) {
+            LogManager.getLogManager().readConfiguration(is);
+        } catch (IOException | SecurityException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

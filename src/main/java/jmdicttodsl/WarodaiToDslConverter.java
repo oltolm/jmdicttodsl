@@ -3,42 +3,59 @@
  */
 package jmdicttodsl;
 
-import java.io.*;
-import static java.nio.charset.StandardCharsets.UTF_16;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import static java.util.Comparator.comparingInt;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.lang.String.join;
+import static java.nio.charset.StandardCharsets.UTF_16;
+import static java.nio.file.Files.readAllLines;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import static java.util.Arrays.asList;
+import static java.util.Comparator.comparingInt;
+import java.util.List;
+import java.util.logging.Level;
+import static java.util.logging.Level.FINEST;
+import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static java.util.stream.Collectors.toList;
 
 /**
  *
  * @author Oleg Tolmatcev
  */
 class WarodaiToDslConverter {
-    private final String inFile;
-    private final String outFile;
+    private static final Logger LOGGER = Logger.getLogger(WarodaiToDslConverter.class.getName());
+    private final File inFile;
+    private final File outFile;
 
-    WarodaiToDslConverter(String infile, String outfile) {
-        this.inFile = infile;
-        this.outFile = outfile;
+    WarodaiToDslConverter(File inFile, File outFile) {
+        this.inFile = inFile;
+        this.outFile = outFile;
     }
 
     void convert() throws IOException {
         StringBuilder outputText = new StringBuilder();
         outputText.append("#NAME\t\"БЯРС (Jp-Ru)\"\n#INDEX_LANGUAGE\t\"Japanese\"\n#CONTENTS_LANGUAGE\t\"Russian\"\n\n");
-        String inputText = readAll(inFile);
-        List<String> abbrevsText = readAllLines("warodai_abrv.dsl");
+        String inputText = readAll(inFile.getPath());
+        String abbrevsFileName = inFile.getParent() + File.separator + "warodai_abrv.dsl";
+        List<String> abbrevsText = readAllLines(Paths.get(abbrevsFileName), UTF_16);
         Pattern abbrevs = parseAbbrevs(abbrevsText);
         outputText.append(convert(inputText, abbrevs));
-        writeAll(outFile, outputText.toString());
+        writeAll(outFile.getPath(), outputText.toString());
     }
 
-    String convert(String text, Pattern abbrevs) {
+    String convert(String text, Pattern abbrevs) throws IOException {
         String[] entries = text.split("\n\n");
         StringBuilder retval = new StringBuilder();
         for (String entry : entries) {
@@ -74,7 +91,7 @@ class WarodaiToDslConverter {
         return Pattern.compile(regex);
     }
 
-    private String convertEntry(String entry, Pattern abbrevs) {
+    private String convertEntry(String entry, Pattern abbrevs) throws IOException {
         String[] lines = entry.split("\n");
         String header = convertFirstLine(lines[0]);
         StringBuilder retval = new StringBuilder();
@@ -85,87 +102,109 @@ class WarodaiToDslConverter {
         }
         for (int i = 1; i < lines.length; ++i) {
             String line = lines[i].trim();
-            String dsl = convertLine(line, abbrevs);
+            String dsl = convertLine(line, abbrevs, i);
             trn.append(dsl);
             if (i < lines.length - 1) {
                 trn.append("\n\t");
             }
         }
-        retval.append(header).append("\n\t").append("[trn]").append(trn).append("[/trn]");
+        retval.append(header).append("\n\t").append(format("[trn]%s[/trn]", trn));
         return retval.toString();
     }
 
-    private String convertFirstLine(String line) {
+    private String convertFirstLine(String line) throws IOException {
         StringBuilder header = new StringBuilder();
-        Pattern pattern = Pattern.compile("^(.+?)\\s*(?:\\u3010(.+?)\\u3011)?\\((.*?)\\)\\s*\\u3014(.+?)\\u3015");
-        Matcher m = pattern.matcher(line);
+        String kanaPat = "(.+?)";
+        String kajiPat = "(?:\u3010(.+?)\u3011)?";
+        String cyrPat = "\\((.*?)\\)(?: \\[.*?])?";
+        String numberPat = "\u3014(.+?)\u3015";
+        String pat = (format("^%s ?%s%s%s", kanaPat, kajiPat, cyrPat, numberPat));
 
+        Pattern pattern = Pattern.compile(pat);
+        Matcher m = pattern.matcher(line);
         if (!m.lookingAt()) {
+            LOGGER.severe(line);
             return "";
         }
-
         String kana = m.group(1);
         String kanji = m.group(2);
         String cyr = m.group(3);
-        String[] kana1 = kana.split(", ");
+        LOGGER.log(FINEST, cyr);
 
-        for (int i = 0; i < kana1.length; ++i) {
-            String kana2 = kana1[i];
-            header.append(kana2.replaceFirst("I+", ""));
-            header.append("\n");
-        }
+        header.append(join("\n", getKana(kana))).append("\n");
         if (kanji != null) {
-            String[] kanji1 = kanji.split(", ");
-            for (int i = 0; i < kanji1.length; ++i) {
-                String kanji2 = kanji1[i];
-                String[] kanji3 = kanji2.split("\\uFF65");
-                for (int j = 0; j < kanji3.length; ++j) {
-                    String kanji4 = kanji3[j];
-                    header.append(kanji4.replaceFirst("I+", ""));
-                    header.append("\n");
-                }
-            }
+            header.append(join("\n", getKanji(kanji))).append("\n\t");
         }
-
-        StringBuilder l = new StringBuilder();
-        l.append("[m1][c maroon]").append(kana.replaceFirst("I+", "[sup]$0[/sup]"))
-                .append("[/c]");
+        header.append(format("[m1][c maroon]%s[/c]", kana.replaceFirst("I+", "[sup]$0[/sup]")));
         if (kanji != null) {
-            l.append("[c navy]\u3010").append(kanji.replaceFirst("I+", "[sup]$0[/sup]"))
-                    .append("\u3011[/c]");
+            header.append(format("[c navy]\u3010%s\u3011[/c]", kanji.replaceFirst("I+", "[sup]$0[/sup]")));
         }
-        l.append("[c red](").append(cyr).append(")[/c][/m]");
-        header.append("\t");
-        header.append(l);
+        header.append(format("[c red](%s)[/c][/m]", cyr));
         return header.toString();
     }
 
-    private String convertLine(String line, Pattern abbrevs) {
-        StringBuilder retval = new StringBuilder();
-        String line1 = line.replaceAll("<\\/?[ai].*?>", "");
-        Pattern p = Pattern.compile("^\\u2022");
-        // note
-        if (p.matcher(line1).lookingAt()) {
-            retval.append("[m2][c brown]").append(convertLine2(line, abbrevs)).append("[/c][/m]");
-            // normal
-        } else {
-            // '['? (number / cyrillic character)
-            p = Pattern.compile("^\\[?[\\d\\u0400-\\u04FF]");
-            Matcher m = p.matcher(line1);
-            if (m.lookingAt()) {
-                retval.append("[m2]").append(convertLine2(line, abbrevs)).append("[/m]");
-            } else {
-                retval.append("[m4][ex][*]").append(convertLine2(line, abbrevs)).append("[/*][/ex][/m]");
-            }
-        }
-        // example
-        return retval.toString();
+    private List<String> getKanji(String kanji) {
+        return asList(kanji.split(", ")).stream()
+                .flatMap(field -> asList(field.split("\\uFF65")).stream())
+                .map(field -> field.replaceFirst("I+", ""))
+                .collect(toList());
     }
 
-    private String convertLine2(String line, Pattern p) {
+    private List<String> getKana(String kana) {
+        return asList(kana.split(", ")).stream()
+                .map(field -> field.replaceFirst("I+", ""))
+                .collect(toList());
+    }
+
+    private String convertLine(String line, Pattern abbrevs, int i) throws IOException {
+        String jPattern = "(?:\\p{IsHiragana}|\\p{IsKatakana}|\\p{IsHan})";
+        String cPattern = "\\p{IsCyrillic}";
+        String line2 = convertLine2(line, abbrevs);
+        Matcher m = Pattern.compile("^\u2022").matcher(line);
+        // note
+        if (m.lookingAt()) {
+            return format("[m2][c brown]%s[/c][/m]", line2);
+        } else {
+            String pat = format("(?:%s)", join("|", asList("\\d+\\)",
+                    "\\(?<i>",
+                    "\\d\\.",
+                    "[абвгдеж]\\)",
+                    "<i>с[мр]\\.",
+                    "<i>связ\\.",
+                    ".*?\uFF5E.*?",
+                    "\\[?\\p{IsCyrillic}",
+                    ": \\p{IsCyrillic}")));
+            // normal
+            m = Pattern.compile("^" + pat).matcher(line);
+            if (i == 1 || m.lookingAt()) {
+                return format("[m2]%s[/m]", line2);
+            } else {
+                String prefix = format("(?:%s)?", join("|", asList("8/",
+                        "<i>прост\\.</i> ",
+                        ": ",
+                        "SOS",
+                        "ABC/",
+                        "5%/",
+                        "69",
+                        "<a href=\"#1-008-1-55\">",
+                        "<a href=\"#1-031-1-25\">",
+                        "[\u2026\u300E\u300CABKMNPSX\\[3568]")));
+                m = Pattern.compile("^\u25C7?" + prefix + jPattern)
+                        .matcher(line);
+                if (!m.lookingAt()) {
+                    throw new IOException(line);
+                }
+                return format("[m4][ex][*]%s[/*][/ex][/m]", line2);
+            }
+        }
+    }
+
+    private String convertLine2(String line, Pattern abbrevs) {
         line = line.replaceAll("\\[", "\\\\[").replaceAll("\\]", "\\\\]");
-        line = p.matcher(line).replaceAll("[p]$0[/p]");
-        line = line.replaceAll("<i>", "[i]").replaceAll("<\\/i>", "[/i]").replaceAll("<a href=\".*?\">(.*?)<\\/a>", "[ref]$1[/ref]");
+        line = abbrevs.matcher(line).replaceAll("[p]$0[/p]");
+        line = line.replaceAll("<i>", "[i]")
+                .replaceAll("<\\/i>", "[/i]")
+                .replaceAll("<a href=\".*?\">(.*?)<\\/a>", "[ref]$1[/ref]");
         return line;
     }
 
@@ -188,7 +227,4 @@ class WarodaiToDslConverter {
         }
     }
 
-    private List<String> readAllLines(String fileName) throws IOException {
-        return Files.readAllLines(Paths.get(fileName), UTF_16);
-    }
 }
