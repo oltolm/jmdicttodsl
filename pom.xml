@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>jmdict2dsl</groupId>
     <artifactId>jmdict2dsl</artifactId>
     <packaging>jar</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <name>jmdict2dsl</name>
     <url>http://maven.apache.org</url>
 
@@ -14,7 +13,8 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/oltolm/jmdicttodsl.git</developerConnection>
-    </scm>
+      <tag>0.3</tag>
+  </scm>
 
     <build>
         <plugins>
