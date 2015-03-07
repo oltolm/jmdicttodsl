@@ -27,7 +27,7 @@ import javax.swing.SwingWorker;
  * @author Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 class WarodaiTask extends SwingWorker<Void, Void>{
-    private static final Logger LOGGER = Logger.getLogger(WarodaiTask.class.getName());
+    private static final Logger logger = Logger.getLogger(WarodaiTask.class.getName());
     private final JmdictToDsl frame;
     private final File file;
     private File outFile;
@@ -47,7 +47,7 @@ class WarodaiTask extends SwingWorker<Void, Void>{
         try {
             converter.convert();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
             System.exit(1);
         }
         return null;

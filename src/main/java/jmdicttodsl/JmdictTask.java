@@ -44,7 +44,7 @@ import org.stringtemplate.v4.STGroupFile;
  * @author Oleg Tolmatcev <oleg.tolmatcev@yahoo.de>
  */
 class JmdictTask extends SwingWorker<Void, Void> {
-    private final static Logger LOGGER = Logger.getLogger(JmdictTask.class.getName());
+    private final static Logger logger = Logger.getLogger(JmdictTask.class.getName());
     private final File inFile;
     private final String language;
     private final String format;
@@ -80,7 +80,7 @@ class JmdictTask extends SwingWorker<Void, Void> {
             StaxReader staxReader = new StaxReader(reader, lang, converter);
             staxReader.doit();
         } catch (Exception ex) {
-            LOGGER.log(SEVERE, null, ex);
+            logger.log(SEVERE, null, ex);
             System.exit(1);
         }
         return null;

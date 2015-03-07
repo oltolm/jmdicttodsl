@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.toList;
  * @author Oleg Tolmatcev
  */
 class WarodaiToDslConverter {
-    private static final Logger LOGGER = Logger.getLogger(WarodaiToDslConverter.class.getName());
+    private static final Logger logger = Logger.getLogger(WarodaiToDslConverter.class.getName());
     private final File inFile;
     private final File outFile;
 
@@ -133,13 +133,13 @@ class WarodaiToDslConverter {
         Pattern pattern = Pattern.compile(pat);
         Matcher m = pattern.matcher(line);
         if (!m.lookingAt()) {
-            LOGGER.severe(line);
+            logger.severe(line);
             return "";
         }
         String kana = m.group(1);
         String kanji = m.group(2);
         String cyr = m.group(3);
-        LOGGER.log(FINEST, cyr);
+        logger.log(FINEST, cyr);
 
         header.append(join("\n", getKana(kana))).append("\n");
         if (kanji != null) {

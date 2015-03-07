@@ -30,7 +30,7 @@ import javax.swing.*;
  * @author Oleg Tolmatcev
  */
 public class JmdictToDsl extends javax.swing.JFrame {
-    private static final Logger LOGGER = Logger.getLogger(JmdictToDsl.class.getName());
+    private static final Logger logger = Logger.getLogger(JmdictToDsl.class.getName());
 
     private volatile boolean isBusy = false;
 
@@ -206,7 +206,7 @@ public class JmdictToDsl extends javax.swing.JFrame {
         try (InputStream is = JmdictToDsl.class.getResourceAsStream("/logging.properties")) {
             LogManager.getLogManager().readConfiguration(is);
         } catch (IOException | SecurityException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
             System.exit(1);
         }
         SwingUtilities.invokeLater(() -> {
@@ -215,7 +215,7 @@ public class JmdictToDsl extends javax.swing.JFrame {
                 new JmdictToDsl();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                     UnsupportedLookAndFeelException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, null, ex);
             }
         });
     }
