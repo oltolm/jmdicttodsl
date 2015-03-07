@@ -13,7 +13,7 @@
     </properties>
 
     <scm>
-        <developerConnection>scm:git:git@github.com/oltolm/jmdicttodsl.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:oltolm/jmdicttodsl.git</developerConnection>
     </scm>
 
     <build>
