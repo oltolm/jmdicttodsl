@@ -72,10 +72,10 @@ class JmdictTask extends SwingWorker<Void, Void> {
                      UTF_8))) {
             String lang = createLang(language);
             Converter converter = createConverter(inFile, writer, lang, format);
-            //                    MyContentHandler handler = new MyContentHandler(lang, converter);
-            //                    SAXParserFactory factory = SAXParserFactory.newInstance();
-            //                    SAXParser saxParser = factory.newSAXParser();
-            //                    saxParser.parse(inFile, handler);
+//            MyContentHandler handler = new MyContentHandler(lang, converter);
+//            SAXParserFactory factory = SAXParserFactory.newInstance();
+//            SAXParser saxParser = factory.newSAXParser();
+//            saxParser.parse(inFile, handler);
             converter.writeHeader();
             StaxReader staxReader = new StaxReader(reader, lang, converter);
             staxReader.doit();
@@ -90,7 +90,6 @@ class JmdictTask extends SwingWorker<Void, Void> {
     protected void done() {
         frame.finishConversion(outFile, start);
     }
-
 
     private String createFileName(File inFile, String format) {
         String fileName;

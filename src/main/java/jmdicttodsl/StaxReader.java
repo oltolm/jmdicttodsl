@@ -40,10 +40,10 @@ class StaxReader {
     }
 
     void doit() throws Exception {
-        XmlEntry entry = null;
-        Kanji kanji = null;
-        Reading reading = null;
-        Sense sense = null;
+        XmlEntry entry = new XmlEntry();
+        Kanji kanji = new Kanji();
+        Reading reading = new Reading();
+        Sense sense = new Sense();
 
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLStreamReader xmlReader = factory.createXMLStreamReader(reader);

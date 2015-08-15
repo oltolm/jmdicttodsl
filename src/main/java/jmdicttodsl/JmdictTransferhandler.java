@@ -32,6 +32,7 @@ import javax.swing.TransferHandler;
  *
  * @author Oleg Tolmatcev
  */
+@SuppressWarnings("serial")
 public class JmdictTransferhandler extends TransferHandler {
     private static final Logger LOGGER = Logger.getLogger(JmdictTransferhandler.class.getName());
     private final Predicate<Void> pred;
@@ -47,6 +48,7 @@ public class JmdictTransferhandler extends TransferHandler {
         return pred.test(null) && support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean importData(TransferSupport support) {
         try {

@@ -29,6 +29,7 @@ import javax.swing.*;
  *
  * @author Oleg Tolmatcev
  */
+@SuppressWarnings("serial")
 public class JmdictToDsl extends javax.swing.JFrame {
     private static final Logger logger = Logger.getLogger(JmdictToDsl.class.getName());
 

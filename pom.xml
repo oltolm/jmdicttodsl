@@ -14,7 +14,7 @@
     <scm>
         <developerConnection>scm:git:https://github.com/oltolm/jmdicttodsl.git</developerConnection>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <build>
         <plugins>
