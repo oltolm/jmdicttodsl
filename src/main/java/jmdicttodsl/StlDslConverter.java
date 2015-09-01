@@ -16,11 +16,14 @@
  */
 package jmdicttodsl;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.BlockingQueue;
+import java.util.function.Predicate;
+
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -28,23 +31,30 @@ import org.stringtemplate.v4.STGroup;
  *
  * @author Oleg Tolmatcev
  */
-class StlDslConverter implements Converter, Consumer<XmlEntry> {
+class StlDslConverter implements Converter {
 
     private final Appendable appender;
     private final STGroup group;
     private final DslProcessor processor = new DslProcessor();
     private final String lang;
+    private final BlockingQueue<XmlEntry> queue;
+    private final List<String> names;
 
-    public StlDslConverter(STGroup group, Appendable appender, String lang) {
+    public StlDslConverter(STGroup group, Appendable appender, String lang, BlockingQueue<XmlEntry> queue) {
         this.appender = appender;
         this.lang = lang;
         this.group = group;
+        this.queue = queue;
+        names = Arrays.asList("pos", "field", "misc",
+                "dial", "lsource", "gloss", "xref");
     }
 
     private void doit(XmlEntry xmlEntry) throws IOException {
         List<DslEntry> dslEntries = processor.process(xmlEntry);
         for (DslEntry dslEntry : dslEntries) {
-            List<String> senses = processSenses(dslEntry);
+            List<String> senses = dslEntry.sense.stream()
+                    .map(this::processSense)
+                    .collect(toList());
             ST st = group.getInstanceOf("senses");
             st.add("index", dslEntry.index);
             st.add("entries", dslEntry.entry);
@@ -55,33 +65,28 @@ class StlDslConverter implements Converter, Consumer<XmlEntry> {
         }
     }
 
-    private List<String> processSenses(DslEntry dslEntry) {
-        List<String> names = Arrays.asList("pos", "field", "misc",
-                "dial", "lsource", "gloss", "xref");
-        List<String> senses = new ArrayList<>();
-        for (Sense sense : dslEntry.sense) {
-            // STL evaluates an attribute to false only if it is "null" or
-            // "false".
-            for (LSource lsource : sense.lsource) {
-                if (lsource.text != null && lsource.text.isEmpty())
-                    lsource.text = null;
-            }
-            List<String> attributes = new ArrayList<>();
-            for (String name : names) {
-                ST st = group.getInstanceOf(name);
-                st.add("sense", sense);
-                String result = st.render();
-                if (!result.isEmpty())
-                    attributes.add(result);
-            }
-
-            if (!attributes.isEmpty()) {
-                ST st = group.getInstanceOf("join");
-                st.add("list", attributes);
-                senses.add(st.render());
-            }
+    private String processSense(Sense sense) {
+        // STL evaluates an attribute to false only if it is null or false.
+        for (LSource lsource : sense.lsource) {
+            if (lsource.text != null && lsource.text.isEmpty())
+                lsource.text = null;
         }
-        return senses;
+        Predicate<? super String> isEmpty = String::isEmpty;
+        List<String> attributes = names.stream()
+                .map(name -> {
+                    ST st = group.getInstanceOf(name);
+                    st.add("sense", sense);
+                    return st.render();
+                })
+                .filter(isEmpty.negate())
+                .collect(toList());
+
+        if (!attributes.isEmpty()) {
+            ST st = group.getInstanceOf("join");
+            st.add("list", attributes);
+            return st.render();
+        }
+        return "";
     }
 
     @Override
@@ -111,11 +116,18 @@ class StlDslConverter implements Converter, Consumer<XmlEntry> {
     }
 
     @Override
-    public void accept(XmlEntry arg) {
+    public void run() {
         try {
-            doit(arg);
-        } catch (IOException ex) {
-            throw Sneak.sneakyThrow(ex);
+            XmlEntry entry = queue.take();
+            while (!entry.sense.isEmpty()) {
+                doit(entry);
+                entry = queue.take();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            throw Sneak.sneakyThrow(e);
         }
     }
+
 }

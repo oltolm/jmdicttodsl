@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.BlockingQueue;
+
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -28,23 +29,29 @@ import org.stringtemplate.v4.STGroup;
  *
  * @author Oleg Tolmatcev
  */
-class StlEdictConverter implements Converter, Consumer<XmlEntry> {
+class StlEdictConverter implements Converter {
 
     private final Appendable appender;
     private final STGroup group;
+    private final BlockingQueue<XmlEntry> queue;
 
-    public StlEdictConverter(STGroup group, Appendable writer, String lang) {
+    public StlEdictConverter(STGroup group, Appendable writer, String lang, BlockingQueue<XmlEntry> queue) {
         this.appender = writer;
         this.group = group;
+        this.queue = queue;
     }
 
     private void doit(XmlEntry xmlEntry) throws IOException {
-        for (Reading r_ele : xmlEntry.r_ele)
-            if (!xmlEntry.k_ele.isEmpty())
-                for (Kanji k_ele : xmlEntry.k_ele)
+        for (Reading r_ele : xmlEntry.r_ele) {
+            if (!xmlEntry.k_ele.isEmpty()) {
+                for (Kanji k_ele : xmlEntry.k_ele) {
                     processEntry(xmlEntry, k_ele, r_ele);
-            else
+                }
+            }
+            else {
                 processEntry(xmlEntry, new Kanji(), r_ele);
+            }
+        }
     }
 
     @Override
@@ -60,17 +67,19 @@ class StlEdictConverter implements Converter, Consumer<XmlEntry> {
         StringBuilder result = new StringBuilder();
         if (r_ele.re_restr.contains(k_ele.keb) || r_ele.re_restr.isEmpty()) {
             List<Sense> senses = new ArrayList<>();
-            for (Sense s : xmlEntry.sense)
+            for (Sense s : xmlEntry.sense) {
                 if ((s.stagr.isEmpty() && s.stagk.isEmpty())
                         || s.stagr.contains(r_ele.reb)
                         || s.stagk.contains(k_ele.keb)) {
                     senses.add(s);
                 }
+            }
             if (!senses.isEmpty()) {
-                if (k_ele.keb != null)
+                if (k_ele.keb != null) {
                     result.append(k_ele.keb).append(" [").append(r_ele.reb).append("] /");
-                else
+                } else {
                     result.append(r_ele.reb).append(" /");
+                }
 
                 ST st;
                 if (k_ele.keb != null) {
@@ -95,11 +104,17 @@ class StlEdictConverter implements Converter, Consumer<XmlEntry> {
     }
 
     @Override
-    public void accept(XmlEntry arg) {
+    public void run() {
         try {
-            doit(arg);
-        } catch (IOException ex) {
-            throw Sneak.sneakyThrow(ex);
+            XmlEntry entry = queue.take();
+            while (!entry.sense.isEmpty()) {
+                doit(entry);
+                entry = queue.take();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            throw Sneak.sneakyThrow(e);
         }
     }
 }

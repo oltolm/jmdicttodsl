@@ -3,10 +3,11 @@
  */
 package jmdicttodsl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringReader;
-import java.util.function.Consumer;
+
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,12 +48,11 @@ public class StaxReaderTest extends JmdictTest {
 
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditions();
 
-        Consumer<XmlEntry> consumer = (XmlEntry arg) -> {
-            assertEquals(xmlEntry, arg);
-        };
         StringReader reader = new StringReader(entry);
-        StaxReader instance = new StaxReader(reader, lang, consumer);
-        instance.doit();
+        StaxReader instance = new StaxReader(reader, lang);
+        XmlEntry result = instance.next();
+        assertEquals(xmlEntry, result);
+        instance.close();
     }
 
     @Test
@@ -74,13 +74,11 @@ public class StaxReaderTest extends JmdictTest {
 "</entry>";
 
         final XmlEntry xmlEntry = createXmlEntryForWeatherConditionsGerman();
-
-        Consumer<XmlEntry> consumer = (XmlEntry arg) -> {
-            assertEquals(xmlEntry, arg);
-        };
         StringReader reader = new StringReader(entry);
-        StaxReader instance = new StaxReader(reader, lang, consumer);
-        instance.doit();
+        StaxReader instance = new StaxReader(reader, lang);
+        XmlEntry result = instance.next();
+        assertEquals(xmlEntry, result);
+        instance.close();
     }
 
 }

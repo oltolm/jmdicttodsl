@@ -16,6 +16,8 @@
  */
 package jmdicttodsl;
 
+import java.util.concurrent.BlockingQueue;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -30,7 +32,7 @@ class JmdictContentHandler extends DefaultHandler {
     private StringBuilder builder;
     /** Value of the xml:lang attribute. */
     private final String lang;
-    private final Converter converter;
+    private final BlockingQueue<XmlEntry> queue;
 
     private String glossLang;
     private XmlEntry entry;
@@ -54,8 +56,8 @@ class JmdictContentHandler extends DefaultHandler {
         throw e;
     }
 
-    public JmdictContentHandler(String lang, Converter converter) {
-        this.converter = converter;
+    public JmdictContentHandler(String lang, BlockingQueue<XmlEntry> queue) {
+        this.queue = queue;
         this.entry = null;
         this.builder = null;
         this.glossLang = "";
@@ -64,20 +66,10 @@ class JmdictContentHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        try {
-            converter.writeHeader();
-        } catch (Exception ex) {
-            throw new SAXException(ex);
-        }
     }
 
     @Override
     public void endDocument() throws SAXException {
-        try {
-            converter.finish();
-        } catch (Exception ex) {
-            throw new SAXException(ex);
-        }
     }
 
     @Override
@@ -89,84 +81,89 @@ class JmdictContentHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         builder = new StringBuilder();
         switch (qName) {
-            case "entry":
-                entry = new XmlEntry();
-                break;
-            case "k_ele":
-                kanji = new Kanji();
-                break;
-            case "r_ele":
-                reading = new Reading();
-                break;
-            case "sense":
-                sense = new Sense();
-                break;
-            case "gloss":
-                glossLang = attributes.getValue("xml:lang");
-                break;
-            case "lsource":
-                lsource = new LSource();
-                lsource.lang = attributes.getValue("xml:lang");
-                break;
+        case "entry":
+            entry = new XmlEntry();
+            break;
+        case "k_ele":
+            kanji = new Kanji();
+            break;
+        case "r_ele":
+            reading = new Reading();
+            break;
+        case "sense":
+            sense = new Sense();
+            break;
+        case "gloss":
+            glossLang = attributes.getValue("xml:lang");
+            break;
+        case "lsource":
+            lsource = new LSource();
+            lsource.lang = attributes.getValue("xml:lang");
+            break;
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
-            case "entry":
-                converter.accept(entry);
-                break;
-            case "keb":
-                kanji.keb = builder.toString();
-                break;
-            case "ke_inf":
-                kanji.ke_inf.add(builder.toString());
-                break;
-            case "reb":
-                reading.reb = builder.toString();
-                break;
-            case "re_inf":
-                reading.re_inf.add(builder.toString());
-                break;
-            case "re_restr":
-                reading.re_restr.add(builder.toString());
-                break;
-            case "pos":
-                sense.pos.add(builder.toString());
-                break;
-            case "field":
-                sense.field.add(builder.toString());
-                break;
-            case "misc":
-                sense.misc.add(builder.toString());
-                break;
-            case "xref":
-                sense.xref.add(builder.toString());
-                break;
-            case "gloss":
-                if (glossLang.equals(lang))
-                      sense.gloss.add(builder.toString());
-                break;
-            case "stagk":
-                sense.stagk.add(builder.toString());
-                break;
-            case "stagr":
-                sense.stagr.add(builder.toString());
-                break;
-            case "k_ele":
-                entry.k_ele.add(kanji);
-                break;
-            case "r_ele":
-                entry.r_ele.add(reading);
-                break;
-            case "lsource":
-                lsource.text = builder.toString();
-                sense.lsource.add(lsource);
-                break;
-            case "sense":
-                entry.sense.add(sense);
-                break;
+        case "entry":
+            try {
+                queue.put(entry);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // see Java Concurrency in Practice 5.4
+                throw new SAXException(e);
+            }
+            break;
+        case "keb":
+            kanji.keb = builder.toString();
+            break;
+        case "ke_inf":
+            kanji.ke_inf.add(builder.toString());
+            break;
+        case "reb":
+            reading.reb = builder.toString();
+            break;
+        case "re_inf":
+            reading.re_inf.add(builder.toString());
+            break;
+        case "re_restr":
+            reading.re_restr.add(builder.toString());
+            break;
+        case "pos":
+            sense.pos.add(builder.toString());
+            break;
+        case "field":
+            sense.field.add(builder.toString());
+            break;
+        case "misc":
+            sense.misc.add(builder.toString());
+            break;
+        case "xref":
+            sense.xref.add(builder.toString());
+            break;
+        case "gloss":
+            if (glossLang.equals(lang))
+                sense.gloss.add(builder.toString());
+            break;
+        case "stagk":
+            sense.stagk.add(builder.toString());
+            break;
+        case "stagr":
+            sense.stagr.add(builder.toString());
+            break;
+        case "k_ele":
+            entry.k_ele.add(kanji);
+            break;
+        case "r_ele":
+            entry.r_ele.add(reading);
+            break;
+        case "lsource":
+            lsource.text = builder.toString();
+            sense.lsource.add(lsource);
+            break;
+        case "sense":
+            entry.sense.add(sense);
+            break;
         }
     }
 

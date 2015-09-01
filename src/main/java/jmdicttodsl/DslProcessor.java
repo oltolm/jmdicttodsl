@@ -52,7 +52,8 @@ class DslProcessor {
         return dslEntries;
     }
 
-    private void fillTables(XmlEntry entry, Map<String, Kanji> ktable, Map<String, Reading> rtable, List<Sense> senses) {
+    private void fillTables(XmlEntry entry, Map<String, Kanji> ktable, Map<String, Reading> rtable,
+            List<Sense> senses) {
         for (Sense sense : entry.sense) {
             if (!sense.stagk.isEmpty()) {
                 for (String k : sense.stagk) {
@@ -72,16 +73,16 @@ class DslProcessor {
             Map<String, Kanji> ktable,
             Map<String, Reading> rtable,
             List<Sense> senses) {
-        Map<Entry, List<Sense>> map = new HashMap<>();
+        Map<Entry, List<Sense>> entryToSenses = new HashMap<>();
         // cross product of kanji and readings
         for (Reading r : rtable.values()) {
             if (!r.re_restr.isEmpty()) {
                 for (String k : r.re_restr) {
-                    putEntry(ktable.get(k), r, senses, map);
+                    putEntry(ktable.get(k), r, senses, entryToSenses);
                 }
             } else if (!entry.k_ele.isEmpty()) {
                 for (Kanji k_ele : entry.k_ele) {
-                    putEntry(k_ele, r, senses, map);
+                    putEntry(k_ele, r, senses, entryToSenses);
                 }
             } else {
                 Entry newEntry = new Entry();
@@ -90,10 +91,10 @@ class DslProcessor {
                 List<Sense> allSenses = new ArrayList<>();
                 allSenses.addAll(r.sense);
                 allSenses.addAll(senses);
-                map.put(newEntry, allSenses);
+                entryToSenses.put(newEntry, allSenses);
             }
         }
-        return map;
+        return entryToSenses;
     }
 
     private void createIndex(List<DslEntry> entries) {
@@ -106,7 +107,7 @@ class DslProcessor {
     }
 
     private void putEntry(Kanji k1, Reading r, List<Sense> senses,
-            Map<Entry, List<Sense>> map) {
+            Map<Entry, List<Sense>> entryToSenses) {
         Entry entry = new Entry();
         entry.info.addAll(r.re_inf);
         entry.info.addAll(k1.ke_inf);
@@ -116,17 +117,17 @@ class DslProcessor {
         allSenses.addAll(r.sense);
         allSenses.addAll(k1.sense);
         allSenses.addAll(senses);
-        map.put(entry, allSenses);
+        entryToSenses.put(entry, allSenses);
     }
 
-    private List<DslEntry> mergeEntries(Map<Entry, List<Sense>> map) {
-        Map<List<Sense>, List<Entry>> map1 = map.keySet().stream()
-                .collect(groupingBy(entry -> map.get(entry)));
+    private List<DslEntry> mergeEntries(Map<Entry, List<Sense>> entryToSenses) {
+        Map<List<Sense>, List<Entry>> sensesToEntries = entryToSenses.keySet().stream()
+                .collect(groupingBy(entry -> entryToSenses.get(entry)));
         List<DslEntry> result = new ArrayList<>();
-        for (List<Entry> es : map1.values()) {
+        for (java.util.Map.Entry<List<Sense>, List<Entry>> entries : sensesToEntries.entrySet()) {
             DslEntry dslEntry = new DslEntry();
-            dslEntry.entry.addAll(es);
-            dslEntry.sense.addAll(map.get(es.get(0)));
+            dslEntry.entry.addAll(entries.getValue());
+            dslEntry.sense.addAll(entries.getKey());
             result.add(dslEntry);
         }
         return result;

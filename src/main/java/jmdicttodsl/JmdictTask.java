@@ -16,6 +16,11 @@
  */
 package jmdicttodsl;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_16;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.logging.Level.SEVERE;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,16 +32,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import static java.lang.String.format;
 import java.net.URL;
-import static java.nio.charset.StandardCharsets.UTF_16;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.Date;
-import static java.util.logging.Level.SEVERE;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+
 import javax.swing.SwingWorker;
 import javax.xml.transform.TransformerConfigurationException;
+
 import org.stringtemplate.v4.STGroupFile;
 
 /**
@@ -66,19 +74,36 @@ class JmdictTask extends SwingWorker<Void, Void> {
         outFile = new File(inFile.getParentFile(), fileName);
         if (outFile.exists())
             outFile.delete();
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile),
-                UTF_16));
-             Reader reader = new BufferedReader(new InputStreamReader(createInputStream(inFile),
-                     UTF_8))) {
-            String lang = createLang(language);
-            Converter converter = createConverter(inFile, writer, lang, format);
-//            MyContentHandler handler = new MyContentHandler(lang, converter);
-//            SAXParserFactory factory = SAXParserFactory.newInstance();
-//            SAXParser saxParser = factory.newSAXParser();
-//            saxParser.parse(inFile, handler);
+        String lang = createLang(language);
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), UTF_16));
+                Reader reader = new BufferedReader(new InputStreamReader(createInputStream(inFile), UTF_8));
+                StaxReader staxReader = new StaxReader(reader, lang);
+                ) {
+            final BlockingQueue<XmlEntry> queue = new ArrayBlockingQueue<>(1);
+            Converter converter = createConverter(inFile, writer, lang, format, queue);
             converter.writeHeader();
-            StaxReader staxReader = new StaxReader(reader, lang, converter);
-            staxReader.doit();
+            ExecutorService service = Executors.newFixedThreadPool(2);
+            service.submit(() -> {
+//                JmdictContentHandler handler = new JmdictContentHandler(lang, queue);
+//                SAXParser saxParser;
+//                try {
+//                    saxParser = SAXParserFactory.newInstance().newSAXParser();
+//                    saxParser.parse(new InputSource(reader), handler);
+//                    queue.put(new XmlEntry());
+//                } catch (Exception e) {
+//                    throw Sneak.sneakyThrow(e);
+//                }
+                try {
+                    while (staxReader.hasNext()) {
+                        queue.put(staxReader.next());
+                    }
+                    queue.put(new XmlEntry());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            Future<?> consumerResult = service.submit(converter);
+            consumerResult.get(); // block until consumer has consumed everything
         } catch (Exception ex) {
             logger.log(SEVERE, null, ex);
             System.exit(1);
@@ -109,16 +134,16 @@ class JmdictTask extends SwingWorker<Void, Void> {
         }
     }
 
-    private Converter createConverter(File file, Writer writer, String lang, String format)
-            throws TransformerConfigurationException {
+    private Converter createConverter(File inFile, Writer writer, String lang, String format,
+            BlockingQueue<XmlEntry> queue) throws TransformerConfigurationException {
         switch (format) {
             case "DSL": {
-                STGroupFile group = createSTGroup(file, "dsl.stg");
-                return new StlDslConverter(group, writer, lang);
+                STGroupFile group = createSTGroup(inFile, "dsl.stg");
+                return new StlDslConverter(group, writer, lang, queue);
             }
             case "EDICT": {
-                STGroupFile group = createSTGroup(file, "edict.stg");
-                return new StlEdictConverter(group, writer, lang);
+                STGroupFile group = createSTGroup(inFile, "edict.stg");
+                return new StlEdictConverter(group, writer, lang, queue);
             }
         }
         throw new IllegalArgumentException(format("unknown format %s", format));
