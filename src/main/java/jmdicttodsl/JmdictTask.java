@@ -77,8 +77,7 @@ class JmdictTask extends SwingWorker<Void, Void> {
         String lang = createLang(language);
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), UTF_16));
                 Reader reader = new BufferedReader(new InputStreamReader(createInputStream(inFile), UTF_8));
-                StaxReader staxReader = new StaxReader(reader, lang);
-                ) {
+                StaxReader staxReader = new StaxReader(reader, lang);) {
             final BlockingQueue<XmlEntry> queue = new ArrayBlockingQueue<>(1);
             Converter converter = createConverter(inFile, writer, lang, format, queue);
             converter.writeHeader();
