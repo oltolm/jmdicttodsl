@@ -8,4 +8,4 @@ JmdictToDsl can also convert [Большой словарь японского �
 (ewarodai.txt) to the DSL format.
 
 ## License
-JmdictToDsl is licensed under GPL3+. See gpl-3.0.txt.
+JmdictToDsl is licensed under GPL3+. See `LICENSE`.
